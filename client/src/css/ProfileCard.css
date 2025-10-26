@@ -1,0 +1,80 @@
+/* Full Profile Header Container */
+.profile-header {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  border-radius: 10px;
+  padding-bottom: 20px;
+}
+
+/* Cover photo */
+.profile-cover {
+  width: 100%;
+  height: 260px;
+  background: linear-gradient(90deg, #ff5b5b, #ff8d8d);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.profile-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Avatar overlapping cover bottom-left */
+.profile-avatar {
+  position: absolute;
+  bottom: -60px;
+  left: 25px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 5px solid white;
+  overflow: hidden;
+  background: #eee;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* User name + location beside avatar */
+.profile-basic-info {
+  margin-top: 80px;
+  padding-left: 190px; /* Space for avatar */
+}
+
+.profile-basic-info h2 {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #b10000;
+  margin: 0;
+}
+
+.profile-basic-info p {
+  font-size: 0.98rem;
+  color: #444;
+}
+
+/* Whole page alignment */
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 90px;
+}
+
+/* Details card */
+.profile-details-card {
+  width: 100%;
+  max-width: 900px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 22px;
+  margin-top: 25px;
+  box-shadow: 0 3px 12px rgba(255, 0, 0, 0.09);
+}
