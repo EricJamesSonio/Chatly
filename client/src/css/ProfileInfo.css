@@ -1,41 +1,42 @@
 /* Profile Details Card */
-.profile-info-card {
+.profile-info {
   width: 100%;
   max-width: 900px;
   background: #fff;
   border-radius: 10px;
-  padding: 20px 28px;
-  margin: 20px auto;
-  box-shadow: 0 2px 8px rgba(255, 0, 0, 0.08);
+  padding: 24px 30px;
+  margin: 60px auto 20px auto; /* increased top margin to clear avatar area */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-sizing: border-box;
 }
 
 /* About Title */
-.profile-info-card h3 {
+.profile-info h3 {
   font-size: 1.4rem;
   font-weight: 700;
   color: #b10000;
-  margin-bottom: 15px;
+  margin-bottom: 20px; /* more breathing space below title */
 }
 
-/* Labels + Info Layout */
-.profile-info-card p {
+/* Labels + Info */
+.profile-info p {
   font-size: 1rem;
   color: #333;
-  margin-bottom: 8px;
+  margin-bottom: 10px; /* slightly increased */
+  line-height: 1.5;
 }
 
-.profile-info-card strong {
+.profile-info strong {
   color: #111;
 }
 
-/* Social links container spacing */
+/* Social links */
 .profile-social-container {
-  margin-top: 15px;
+  margin-top: 25px; /* extra space before links */
 }
 
-/* Example: Social icons styling if needed later */
 .profile-social-container a {
-  margin-right: 10px;
+  margin-right: 12px;
   font-size: 1.3rem;
   color: #b10000;
   transition: opacity 0.2s;

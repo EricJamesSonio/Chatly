@@ -7,20 +7,24 @@ import Layout from "./layouts/Layout";
 import { ThemeProvider } from "./context/ThemeContext";
 import "./css/global.css";
 import "./css/Text.css";
+import { ChatProvider } from "./context/ChatContext";
 
 const App: React.FC = () => {
   return (
     <ThemeProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Layout showSidebar={true}><Home /></Layout>} />
-          <Route path="/profile" element={<Layout showSidebar={true}><Profile /></Layout>} />
-          <Route path="/friends" element={<Layout showSidebar={true}><div>Friends (Coming soon)</div></Layout>} />
-          <Route path="/settings" element={<Layout showSidebar={true}><Settings /></Layout>} />
-        </Routes>
-      </Router>
+      <ChatProvider>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Layout showSidebar={true}><Home /></Layout>} />
+            <Route path="/profile" element={<Layout showSidebar={true}><Profile /></Layout>} />
+            <Route path="/friends" element={<Layout showSidebar={true}><div>Friends (Coming soon)</div></Layout>} />
+            <Route path="/settings" element={<Layout showSidebar={true}><Settings /></Layout>} />
+          </Routes>
+        </Router>
+      </ChatProvider>
     </ThemeProvider>
   );
 };
+
 
 export default App;

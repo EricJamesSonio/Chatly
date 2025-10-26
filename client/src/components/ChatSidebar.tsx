@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import SidebarChatUser from "./SidebarChatUser";
+import ChatModal from "./ChatModal";
 import "../css/ChatSidebar.css";
 
 const dummyUsers = [
@@ -24,23 +25,43 @@ const dummyUsers = [
 ];
 
 const ChatSidebar: React.FC = () => {
+  const [selectedUser, setSelectedUser] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+
   const openChat = (userId: number) => {
-    console.log("Open chat for user:", userId);
-    // TODO: open modal later
+    const user = dummyUsers.find((u) => u.id === userId);
+    if (user) setSelectedUser(user);
+  };
+
+  const closeChat = () => {
+    setSelectedUser(null);
   };
 
   return (
-    <div className="chat-sidebar">
-      {dummyUsers.map((u) => (
-        <SidebarChatUser
-          key={u.id}
-          name={u.name}
-          avatar={u.avatar}
-          lastMessage={u.lastMessage}
-          onClick={() => openChat(u.id)}
+    <>
+      <div className="chat-sidebar">
+        {dummyUsers.map((u) => (
+          <SidebarChatUser
+            key={u.id}
+            name={u.name}
+            avatar={u.avatar}
+            lastMessage={u.lastMessage}
+            onClick={() => openChat(u.id)}
+            isActive={selectedUser?.id === u.id}
+          />
+        ))}
+      </div>
+
+      {selectedUser && (
+        <ChatModal
+          isOpen={true}
+          onClose={closeChat}
+          userName={selectedUser.name}
         />
-      ))}
-    </div>
+      )}
+    </>
   );
 };
 
