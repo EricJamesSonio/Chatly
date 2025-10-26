@@ -1,30 +1,16 @@
-/* Push page content below the fixed navbar */
-main {
-  padding-top: 72px; /* same as navbar height */
+/* Push content below navbar */
+.layout-content {
+  padding-top: 80px; /* navbar height */
+  padding-right: 330px; /* space for right sidebar */
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
-.layout-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
+/* Remove old sidebar rules */
+.layout-sidebar {
+  display: none;
 }
 
 .layout-body {
-  display: flex;
-  width: 100%;
-}
-
-.layout-sidebar {
-  width: 280px;
-  background: #fff;
-  border-right: 1px solid #eee;
-  height: calc(100vh - 60px); /* minus navbar height */
-  overflow-y: auto;
-  position: sticky;
-  top: 60px;
-}
-
-.layout-content {
-  flex: 1;
-  padding: 20px;
+  display: block;
 }

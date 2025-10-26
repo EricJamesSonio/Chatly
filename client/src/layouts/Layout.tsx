@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "../components/Navbar";
 import ChatSidebar from "../components/ChatSidebar";
 import "../css/Layout.css";
+import "../css/ChatSidebar.css";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,17 +14,13 @@ const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
     <div className="layout-wrapper">
       <Navbar />
 
-      <div className="layout-body">
-        {showSidebar && (
-          <aside className="layout-sidebar">
-            <ChatSidebar />
-          </aside>
-        )}
+      {/* Sidebar FLOATS on the right — not in the content flow */}
+      {showSidebar && <ChatSidebar />}
 
-        <main className="layout-content">
-          {children}
-        </main>
-      </div>
+      {/* Main body content */}
+      <main className="layout-content">
+        {children}
+      </main>
     </div>
   );
 };

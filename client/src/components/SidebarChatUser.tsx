@@ -1,5 +1,5 @@
 import React from "react";
-//import "../css/SidebarChatUser.css";
+import "../css/SidebarChatUser.css";
 
 interface SidebarChatUserProps {
   name: string;

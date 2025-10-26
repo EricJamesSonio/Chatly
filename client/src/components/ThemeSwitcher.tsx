@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { ThemeContext } from "../context/ThemeContext";
-import type { ThemeType } from "../context/ThemeContext"; // 👈 type-only import
+import type { ThemeType } from "../context/ThemeContext"; //
 import "../css/ThemeSwitcher.css";
 
 const ThemeSwitcher: React.FC = () => {
