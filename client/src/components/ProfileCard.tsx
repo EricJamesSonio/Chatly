@@ -23,7 +23,7 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
       </div>
 
       {/* User Basic Info */}
-      <div className="profile-info">
+      <div className="profile-header-info">
         <h2>{name}</h2>
         <p className="profile-location">{location}</p>
       </div>
