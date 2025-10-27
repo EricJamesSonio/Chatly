@@ -1,13 +1,25 @@
 import bcrypt from 'bcrypt';
 
 export const seedAccounts = async (db) => {
-  const users = await db.query('SELECT id FROM users');
+  const [users] = await db.query('SELECT id FROM users');
   const salt = await bcrypt.genSalt(10);
 
-  const data = [
-    [users[0][0].id, 'alice123', await bcrypt.hash('password123', salt)],
-    [users[0][1].id, 'bob321', await bcrypt.hash('securepass', salt)]
+  const usernames = [
+    'alice123',
+    'bob321',
+    'charlie007',
+    'dianaLove',
+    'ethanRun',
+    'fionaArt'
   ];
+
+  const data = await Promise.all(
+    users.map(async (user, index) => [
+      user.id,
+      usernames[index],
+      await bcrypt.hash('password123', salt) // ✅ same password for simplicity
+    ])
+  );
 
   for (const acc of data) {
     await db.execute(`
