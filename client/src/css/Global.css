@@ -11,6 +11,10 @@ nav, .profile-card, .chat-window, .friends-list {
   transition: background 0.3s, color 0.3s, border-color 0.3s;
 }
 
+.h1 {
+  background: white;
+}
+
 /* ========================
    THEME: DARK MODE
    ======================== */

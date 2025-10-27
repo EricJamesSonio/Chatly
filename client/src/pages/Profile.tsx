@@ -1,30 +1,82 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../layouts/Layout";
 import ProfileCard from "../components/ProfileCard";
 import ProfileInfo from "../components/ProfileInfo";
 import "../css/Profile.css";
 
 const Profile: React.FC = () => {
-  // Temporary mock user data (will later come from backend)
-  const user = {
-    name: "Eric James Sonio",
-    birthdate: "2003-07-15",
-    profile_image: "/assets/profile.jpg",
-    location: "Cebu City, Philippines",
-    hobbies: "Playing guitar, gaming, coding",
-    talents: "Music arrangement, programming",
-    facebook_url: "https://facebook.com/",
-    tiktok_url: "https://tiktok.com/",
-    instagram_url: "https://instagram.com/",
-  };
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("chatly_user");
+    if (!storedUser) {
+      setError("No logged-in user found");
+      setLoading(false);
+      return;
+    }
+
+    const parsedUser = JSON.parse(storedUser);
+    const accountId = parsedUser.id;
+
+    const fetchUser = async () => {
+      try {
+        // Step 1️⃣: Fetch the account (to get user_id)
+        const accRes = await fetch(`http://localhost:5000/api/accounts/${accountId}`);
+        if (!accRes.ok) throw new Error("Failed to fetch account data");
+        const accountData = await accRes.json();
+
+        // Step 2️⃣: Fetch the user profile using user_id
+        const userId = accountData.user_id;
+        const userRes = await fetch(`http://localhost:5000/api/users/${userId}`);
+        if (!userRes.ok) throw new Error("Failed to fetch user profile");
+
+        const userData = await userRes.json();
+
+        // Merge account and user details together
+        setUser({
+          ...userData,
+          username: accountData.username,
+        });
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  if (loading)
+    return (
+      <Layout>
+        <p className="loading">Loading profile...</p>
+      </Layout>
+    );
+
+  if (error)
+    return (
+      <Layout>
+        <p className="error">❌ {error}</p>
+      </Layout>
+    );
+
+  if (!user)
+    return (
+      <Layout>
+        <p>No user found</p>
+      </Layout>
+    );
 
   return (
     <Layout>
       <div className="profile-page">
         <ProfileCard
-          name={user.name}
-          profile_image={user.profile_image}
-          location={user.location}
+          name={user.name || user.username}
+          profile_image={user.profile_image || "/assets/default-avatar.png"}
+          location={user.location || "No location specified"}
         />
         <ProfileInfo user={user} />
       </div>
