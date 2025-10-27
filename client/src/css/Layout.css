@@ -1,0 +1,31 @@
+/* Base layout styles */
+.layout-content {
+  padding-top: 80px; /* navbar height */
+  min-height: 100vh;
+  box-sizing: border-box;
+  transition: padding-right 0.3s ease;
+}
+
+/* When sidebar is present */
+.layout-content.with-sidebar {
+  padding-right: 70px; /* Width of collapsed sidebar (avatar only) */
+}
+
+/* When sidebar is expanded */
+.layout-content.with-sidebar.sidebar-expanded {
+  padding-right: 330px; /* Width of expanded sidebar */
+}
+
+/* When sidebar is collapsed */
+.layout-content.with-sidebar.sidebar-collapsed {
+  padding-right: 70px;
+}
+
+/* Remove old sidebar rules */
+.layout-sidebar {
+  display: none;
+}
+
+.layout-body {
+  display: block;
+}

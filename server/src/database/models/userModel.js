@@ -5,6 +5,7 @@ export const createUsersTable = async (db) => {
       name VARCHAR(100) NOT NULL,
       birthdate DATE NOT NULL,
       profile_image VARCHAR(255) DEFAULT 'default.png',
+      cover_photo VARCHAR(255) DEFAULT 'default-cover.jpg',
       location VARCHAR(100),
       hobbies TEXT,
       talents TEXT,
@@ -13,5 +14,5 @@ export const createUsersTable = async (db) => {
       instagram_url VARCHAR(255)
     )
   `);
-  console.log('🧩 users table created');
+  console.log("🧩 users table created (with cover_photo)");
 };

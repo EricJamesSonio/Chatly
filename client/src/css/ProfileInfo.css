@@ -1,0 +1,47 @@
+/* Profile Details Card */
+.profile-info {
+  width: 100%;
+  max-width: 900px;
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 30px;
+  margin: 60px auto 20px auto; /* increased top margin to clear avatar area */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  box-sizing: border-box;
+}
+
+/* About Title */
+.profile-info h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #b10000;
+  margin-bottom: 20px; /* more breathing space below title */
+}
+
+/* Labels + Info */
+.profile-info p {
+  font-size: 1rem;
+  color: #333;
+  margin-bottom: 10px; /* slightly increased */
+  line-height: 1.5;
+}
+
+.profile-info strong {
+  color: #111;
+}
+
+/* Social links */
+.profile-social-container {
+  margin-top: 25px; /* extra space before links */
+}
+
+.profile-social-container a {
+  margin-right: 12px;
+  font-size: 1.3rem;
+  color: #b10000;
+  transition: opacity 0.2s;
+}
+
+.profile-social-container a:hover {
+  opacity: 0.7;
+}

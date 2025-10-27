@@ -1,0 +1,80 @@
+/* Default (light mode) */
+body {
+  background: #f8f9fa;
+  color: #222;
+  font-family: "Segoe UI", sans-serif;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Common to all themes */
+nav, .profile-card, .chat-window, .friends-list {
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.h1 {
+  background: white;
+}
+
+/* ========================
+   THEME: DARK MODE
+   ======================== */
+body[data-theme="dark"] {
+  background: #0f172a;
+  color: #f8fafc;
+}
+body[data-theme="dark"] nav {
+  background: rgba(30, 41, 59, 0.95);
+  color: #fff;
+}
+body[data-theme="dark"] .profile-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ========================
+   THEME: RED MODE
+   ======================== */
+body[data-theme="red"] {
+  background: linear-gradient(180deg, #ffcccc, #ffe5e5);
+  color: #660000;
+}
+body[data-theme="red"] nav {
+  background: rgba(255, 0, 0, 0.8);
+}
+body[data-theme="red"] .profile-card {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  box-shadow: 0 4px 20px rgba(255, 0, 0, 0.2);
+}
+
+/* ========================
+   THEME: BLUE MODE
+   ======================== */
+body[data-theme="blue"] {
+  background: linear-gradient(180deg, #cce5ff, #e6f0ff);
+  color: #003366;
+}
+body[data-theme="blue"] nav {
+  background: rgba(0, 102, 255, 0.8);
+}
+body[data-theme="blue"] .profile-card {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(0, 102, 255, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 102, 255, 0.2);
+}
+
+/* ========================
+   THEME: COLORBLIND FRIENDLY
+   ======================== */
+body[data-theme="colorblind"] {
+  background: #f5f5dc; /* beige */
+  color: #000;
+}
+body[data-theme="colorblind"] nav {
+  background: #444;
+  color: #fff;
+}
+body[data-theme="colorblind"] .profile-card {
+  background: #fff;
+  border: 2px solid #000;
+}

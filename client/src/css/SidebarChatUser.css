@@ -1,0 +1,78 @@
+/* SidebarChatUser.css
+   Neutral base styles — no colors, just layout, sizing, and structure.
+*/
+
+.sidebar-chat-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+/* Hover & active states (neutral tone, no color) */
+.sidebar-chat-user:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.sidebar-chat-user.active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Avatar */
+.user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Info container */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* Name */
+.user-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Last message */
+.user-info p {
+  font-size: 0.875rem;
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Small screen adjustment */
+@media (max-width: 600px) {
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .user-info h4 {
+    font-size: 0.95rem;
+  }
+
+  .user-info p {
+    font-size: 0.8rem;
+  }
+}
