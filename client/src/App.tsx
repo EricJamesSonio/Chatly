@@ -58,7 +58,7 @@ const App: React.FC = () => {
                 <Route
                   path="/settings"
                   element={
-                    <Layout showSidebar={true}>
+                    <Layout showSidebar={false}>
                       <Settings />
                     </Layout>
                   }
