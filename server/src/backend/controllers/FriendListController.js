@@ -75,16 +75,22 @@ const FriendlistController = {
     }
   },
 
-  // Delete friend or request
-  async deleteFriend(req, res) {
-    try {
-      const { id } = req.params;
-      await friendModel.delete(id);
-      res.json({ message: 'Friend deleted or request removed' });
-    } catch (error) {
-      res.status(500).json({ error: 'Server error' });
+async deleteFriend(req, res) {
+  try {
+    const { user_id, friend_id } = req.params;
+    if (!user_id || !friend_id) {
+      return res.status(400).json({ error: "Missing user_id or friend_id" });
     }
-  },
+
+    await friendModel.deleteByUsers(user_id, friend_id);
+    res.json({ message: "Friend deleted or request removed" });
+  } catch (error) {
+    console.error("❌ Delete friend error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+}
+
+,
 
     // ✅ Get users who are NOT friends with this user
   async getNonFriends(req, res) {
@@ -97,6 +103,31 @@ const FriendlistController = {
     }
   },
 
+    async getStatus(req, res) {
+  try {
+    const { user_id, friend_id } = req.params;
+    const [rows] = await db.execute(
+      `
+      SELECT status 
+      FROM friendlist
+      WHERE (user_id = ? AND friend_id = ?)
+         OR (user_id = ? AND friend_id = ?)
+      LIMIT 1
+      `,
+      [user_id, friend_id, friend_id, user_id]
+    );
+
+    if (rows.length > 0) return res.json({ status: rows[0].status });
+    res.json({ status: "none" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch friend status" });
+  }
+}
+
+
 };
+
+
 
 export default FriendlistController;
