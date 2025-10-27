@@ -1,0 +1,23 @@
+.settings-page {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 1rem;
+  padding: 20px;
+
+  /* Move slightly higher */
+  transform: translateY(-10vh);
+}
+
+.settings-page h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.settings-page p {
+  margin: 0 0 10px;
+  font-size: 1rem;
+}

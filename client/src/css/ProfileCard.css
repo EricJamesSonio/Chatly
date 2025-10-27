@@ -1,0 +1,65 @@
+/* Main Profile Header Container */
+.profile-header {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  position: relative;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+/* Cover Photo */
+.profile-cover {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(90deg, #e0e0e0, #f2f2f2);
+  position: relative;
+}
+
+/* Avatar slightly inside the cover */
+.profile-avatar {
+  position: absolute;
+  bottom: 20px; /* avatar stays inside cover */
+  left: 25px;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  overflow: hidden;
+  background: #eee;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 5;
+}
+
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Info (Name + Location) */
+.profile-header-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 24px 24px 190px; /* leaves space for avatar */
+  box-sizing: border-box;
+  margin-top: -10px; /* small lift to align nicely under cover */
+  position: relative;
+  z-index: 4;
+}
+
+.profile-header-info h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 6px 0;
+}
+
+.profile-header-info .profile-location {
+  font-size: 1rem;
+  color: #666;
+  margin: 0;
+}

@@ -10,3 +10,4 @@ export const createAccountsTable = async (db) => {
   `);
   console.log('🧩 accounts table created');
 };
+
