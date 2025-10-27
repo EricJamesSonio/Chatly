@@ -12,11 +12,11 @@ export default class FriendlistModel {
     return result.insertId;
   }
 
-  // ✅ Get all friends of a user (accepted only)
+  // ✅ Get all friends of a user (accepted only, no duplicates)
   async getFriends(user_id) {
     const [rows] = await this.db.execute(
       `
-      SELECT 
+      SELECT DISTINCT
         u.id,
         u.name,
         u.profile_image,
@@ -30,9 +30,12 @@ export default class FriendlistModel {
         f.created_at
       FROM friendlist f
       JOIN users u 
-        ON (u.id = f.friend_id AND f.user_id = ?) 
-        OR (u.id = f.user_id AND f.friend_id = ?)
+        ON (
+          (u.id = f.friend_id AND f.user_id = ?)
+          OR (u.id = f.user_id AND f.friend_id = ?)
+        )
       WHERE f.status = 'accepted'
+      ORDER BY f.created_at DESC
       `,
       [user_id, user_id]
     );
