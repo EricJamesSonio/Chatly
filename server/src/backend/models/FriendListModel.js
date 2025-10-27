@@ -97,4 +97,34 @@ export default class FriendlistModel {
     );
     return rows.length > 0 ? rows[0] : null;
   }
+
+async getNonFriends(user_id) {
+  const [rows] = await this.db.execute(
+    `
+    SELECT DISTINCT
+      u.id,
+      u.name,
+      u.profile_image,
+      u.location,
+      u.hobbies,
+      u.talents,
+      u.facebook_url,
+      u.tiktok_url,
+      u.instagram_url
+    FROM users u
+    LEFT JOIN friendlist f
+      ON (
+        (f.user_id = ? AND f.friend_id = u.id)
+        OR (f.friend_id = ? AND f.user_id = u.id)
+      )
+    WHERE u.id != ?
+      AND (f.status IS NULL OR f.status != 'accepted')
+    ORDER BY u.name ASC
+    `,
+    [user_id, user_id, user_id]
+  );
+  return rows.filter(u => !!u.id);
+}
+
+
 }

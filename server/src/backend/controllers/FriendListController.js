@@ -85,6 +85,18 @@ const FriendlistController = {
       res.status(500).json({ error: 'Server error' });
     }
   },
+
+    // ✅ Get users who are NOT friends with this user
+  async getNonFriends(req, res) {
+    try {
+      const { user_id } = req.params;
+      const users = await friendModel.getNonFriends(user_id);
+      res.json(users);
+    } catch (error) {
+      res.status(500).json({ error: 'Server error' });
+    }
+  },
+
 };
 
 export default FriendlistController;
