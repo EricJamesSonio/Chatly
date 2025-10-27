@@ -125,6 +125,18 @@ async getNonFriends(user_id) {
   );
   return rows.filter(u => !!u.id);
 }
+async deleteByUsers(user_id, friend_id) {
+  await this.db.execute(
+    `
+    DELETE FROM friendlist
+    WHERE (user_id = ? AND friend_id = ?)
+       OR (user_id = ? AND friend_id = ?)
+    `,
+    [user_id, friend_id, friend_id, user_id]
+  );
+  return true;
+}
+
 
 
 }

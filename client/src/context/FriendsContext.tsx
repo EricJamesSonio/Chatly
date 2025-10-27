@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { useAuth } from './AuthContext'; // ✅ Import AuthContext to get logged-in user
+import { useAuth } from './AuthContext';
 
 interface User {
   id: string;
@@ -28,12 +28,13 @@ interface FriendsContextType {
   setIsProfileModalOpen: (isOpen: boolean) => void;
   loading: boolean;
   error: string | null;
+  refreshFriends: () => Promise<void>; // ✅ Add to context type
 }
 
 const FriendsContext = createContext<FriendsContextType | undefined>(undefined);
 
 export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth(); // ✅ Get the current logged-in user
+  const { user } = useAuth();
   const [friends, setFriends] = useState<User[]>([]);
   const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
@@ -41,41 +42,37 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ Fetch friends dynamically based on logged-in user
+  // ✅ Reusable refresh function
+  const refreshFriends = async () => {
+    if (!user?.id) return;
+
+    try {
+      setLoading(true);
+      const res = await fetch(`http://localhost:5000/api/friends/${user.id}`);
+
+      if (!res.ok) throw new Error("Failed to fetch friends");
+
+      const data = await res.json();
+      setFriends(data);
+    } catch (err) {
+      setError("Failed to refresh friends");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ✅ Initial fetch uses refreshFriends
   useEffect(() => {
-    if (!user?.id) return; // Don’t fetch if user not logged in
-
-    const fetchFriends = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:5000/api/friends/${user.id}`);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setFriends(data);
-      } catch (err) {
-        setError('Failed to load friends');
-        console.error('Error fetching friends:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFriends();
+    refreshFriends();
   }, [user?.id]);
 
-  // ✅ Sorting logic
   const sortedFriends = useMemo(() => {
-    return [...friends].sort((a, b) => {
-      if (sortBy === 'name') {
-        return a.name.localeCompare(b.name);
-      } else {
-        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
-      }
-    });
+    return [...friends].sort((a, b) =>
+      sortBy === 'name'
+        ? a.name.localeCompare(b.name)
+        : new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    );
   }, [friends, sortBy]);
 
   return (
@@ -90,6 +87,7 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         setIsProfileModalOpen,
         loading,
         error,
+        refreshFriends, // ✅ Expose to components
       }}
     >
       {children}
