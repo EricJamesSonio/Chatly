@@ -39,33 +39,20 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // TODO: Replace with actual API call to fetch friends
+  // ✅ Replace mock with actual API call
   useEffect(() => {
     const fetchFriends = async () => {
       try {
         setLoading(true);
-        // const response = await fetch('/api/friends');
-        // const data = await response.json();
-        // setFriends(data);
+        const userId = 1; // TODO: replace with logged-in user id (from auth context or session)
+        const response = await fetch(`http://localhost:5000/api/friends/${userId}`);
         
-        // Mock data for now
-        const mockFriends: User[] = [
-          {
-            id: '1',
-            name: 'John Doe',
-            username: 'johndoe',
-            profile_image: '/assets/avatar1.jpg',
-            bio: 'Frontend Developer | React Enthusiast',
-            location: 'New York, USA',
-            birthdate: '1990-05-15',
-            hobbies: 'Coding, Hiking, Photography',
-            talents: 'JavaScript, UI/UX Design',
-            created_at: '2023-01-15T10:30:00Z',
-            last_active: '2023-10-26T14:30:00Z',
-          },
-          // Add more mock friends as needed
-        ];
-        setFriends(mockFriends);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setFriends(data);
       } catch (err) {
         setError('Failed to load friends');
         console.error('Error fetching friends:', err);
@@ -77,7 +64,7 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     fetchFriends();
   }, []);
 
-  // Sort friends based on selected option
+  // Sorting logic
   const sortedFriends = React.useMemo(() => {
     return [...friends].sort((a, b) => {
       if (sortBy === 'name') {

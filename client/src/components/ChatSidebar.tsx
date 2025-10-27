@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import SidebarChatUser from "./SidebarChatUser";
-import ChatModal from "./ChatModal";
+import React from "react";
 import "../css/ChatSidebar.css";
 
 interface ChatSidebarProps {
   isExpanded: boolean;
   onToggle: () => void;
+  onUserSelect: (userId: number) => void; // ⬅ new prop
+  activeUserId?: number | null; // ⬅ highlight active user
 }
 
 const dummyUsers = [
@@ -29,39 +29,26 @@ const dummyUsers = [
   },
 ];
 
-const ChatSidebar: React.FC<ChatSidebarProps> = ({ isExpanded, onToggle }) => {
-  const [selectedUser, setSelectedUser] = useState<{
-    id: number;
-    name: string;
-  } | null>(null);
-
-  const openChat = (userId: number) => {
-    const user = dummyUsers.find((u) => u.id === userId);
-    if (user) setSelectedUser(user);
-  };
-
-  const closeChat = () => {
-    setSelectedUser(null);
-  };
-
+const ChatSidebar: React.FC<ChatSidebarProps> = ({
+  isExpanded,
+  onToggle,
+  onUserSelect,
+  activeUserId,
+}) => {
   return (
-    <div className={`chat-sidebar ${isExpanded ? 'expanded' : 'collapsed'}`}>
+    <div className={`chat-sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
       <button className="sidebar-toggle" onClick={onToggle}>
-        {isExpanded ? '◀' : '☰'}
+        {isExpanded ? "◀" : "☰"}
       </button>
+
       <div className="chat-list">
         {dummyUsers.map((u) => (
-          <div 
-            key={u.id} 
-            className={`chat-user ${selectedUser?.id === u.id ? 'active' : ''}`}
-            onClick={() => openChat(u.id)}
+          <div
+            key={u.id}
+            className={`chat-user ${activeUserId === u.id ? "active" : ""}`}
+            onClick={() => onUserSelect(u.id)}
           >
-            <img 
-              className="chat-avatar" 
-              src={u.avatar} 
-              alt={u.name} 
-              title={u.name} 
-            />
+            <img className="chat-avatar" src={u.avatar} alt={u.name} />
             <div className="chat-user-info">
               <div className="chat-name">{u.name}</div>
               <div className="chat-last">{u.lastMessage}</div>
@@ -69,14 +56,6 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({ isExpanded, onToggle }) => {
           </div>
         ))}
       </div>
-
-      {selectedUser && (
-        <ChatModal
-          isOpen={true}
-          onClose={closeChat}
-          userName={selectedUser.name}
-        />
-      )}
     </div>
   );
 };
