@@ -22,7 +22,7 @@ const Profile: React.FC = () => {
 
     const fetchUser = async () => {
       try {
-        // Step 1️⃣: Fetch the account (to get user_id)
+        // Step 1️⃣: Fetch account info to get user_id
         const accRes = await fetch(`http://localhost:5000/api/accounts/${accountId}`);
         if (!accRes.ok) throw new Error("Failed to fetch account data");
         const accountData = await accRes.json();
@@ -34,7 +34,7 @@ const Profile: React.FC = () => {
 
         const userData = await userRes.json();
 
-        // Merge account and user details together
+        // Step 3️⃣: Merge both account and user data
         setUser({
           ...userData,
           username: accountData.username,
@@ -76,6 +76,7 @@ const Profile: React.FC = () => {
         <ProfileCard
           name={user.name || user.username}
           profile_image={user.profile_image || "/assets/default-avatar.png"}
+          cover_photo={user.cover_photo || "/assets/default-cover.jpg"}
           location={user.location || "No location specified"}
         />
         <ProfileInfo user={user} />

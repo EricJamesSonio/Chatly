@@ -1,0 +1,36 @@
+.friend-buttons {
+  margin-top: 10px;
+}
+
+.btn-add,
+.btn-remove,
+.btn-pending {
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-add {
+  background-color: #1b74e4;
+  color: white;
+}
+.btn-add:hover {
+  background-color: #155cc1;
+}
+
+.btn-pending {
+  background-color: #999;
+  color: white;
+  cursor: default;
+}
+
+.btn-remove {
+  background-color: #e41b1b;
+  color: white;
+}
+.btn-remove:hover {
+  background-color: #b01212;
+}
