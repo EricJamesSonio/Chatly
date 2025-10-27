@@ -11,8 +11,9 @@ router.get('/:user_id', FriendlistController.getFriends);
 
 router.put('/accept/:id', FriendlistController.acceptRequest);
 router.put('/block/:id', FriendlistController.blockFriend);
+router.get("/status/:user_id/:friend_id", FriendlistController.getStatus);
 
-router.delete('/:id', FriendlistController.deleteFriend);
+router.delete('/:user_id/:friend_id', FriendlistController.deleteFriend);
 
 
 export default router;
