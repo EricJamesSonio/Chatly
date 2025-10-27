@@ -6,11 +6,11 @@ const router = express.Router();
 // POST /api/friends/add
 router.post('/add', FriendlistController.addFriend);
 
-// GET /api/friends/:user_id
+// ✅ Specific routes should come first
+router.get('/pending/:user_id', FriendlistController.getPending);
+
 router.get('/:user_id', FriendlistController.getFriends);
 
-// GET /api/friends/pending/:user_id
-router.get('/pending/:user_id', FriendlistController.getPending);
 
 // PUT /api/friends/accept/:id
 router.put('/accept/:id', FriendlistController.acceptRequest);
