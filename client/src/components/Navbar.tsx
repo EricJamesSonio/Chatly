@@ -10,6 +10,7 @@ const Navbar: React.FC = () => {
         <Link to="/">Home</Link>
         <Link to="/profile">Profile</Link>
         <Link to="/friends">Friends</Link>
+        <Link to="/auth">Login / Signup</Link> {/* ✅ new link */}
       </div>
 
       {/* Center Search */}

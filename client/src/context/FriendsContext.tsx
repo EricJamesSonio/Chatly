@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import { useAuth } from './AuthContext'; // ✅ Import AuthContext to get logged-in user
 
 interface User {
   id: string;
@@ -32,6 +33,7 @@ interface FriendsContextType {
 const FriendsContext = createContext<FriendsContextType | undefined>(undefined);
 
 export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth(); // ✅ Get the current logged-in user
   const [friends, setFriends] = useState<User[]>([]);
   const [sortBy, setSortBy] = useState<'name' | 'date'>('name');
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
@@ -39,14 +41,15 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ Replace mock with actual API call
+  // ✅ Fetch friends dynamically based on logged-in user
   useEffect(() => {
+    if (!user?.id) return; // Don’t fetch if user not logged in
+
     const fetchFriends = async () => {
       try {
         setLoading(true);
-        const userId = 1; // TODO: replace with logged-in user id (from auth context or session)
-        const response = await fetch(`http://localhost:5000/api/friends/${userId}`);
-        
+        const response = await fetch(`http://localhost:5000/api/friends/${user.id}`);
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -62,10 +65,10 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     };
 
     fetchFriends();
-  }, []);
+  }, [user?.id]);
 
-  // Sorting logic
-  const sortedFriends = React.useMemo(() => {
+  // ✅ Sorting logic
+  const sortedFriends = useMemo(() => {
     return [...friends].sort((a, b) => {
       if (sortBy === 'name') {
         return a.name.localeCompare(b.name);
