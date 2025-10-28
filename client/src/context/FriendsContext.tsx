@@ -36,11 +36,23 @@ interface FriendsContextType {
 
 const FriendsContext = createContext<FriendsContextType | undefined>(undefined);
 
-// ✅ Initialize socket outside the component
-const socket = io("http://localhost:5000");
+// Use the socket from AuthContext
+let socket: any;
+
+// This will be set by the component when it mounts
 
 export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, socket: authSocket } = useAuth();
+  
+  // Set the socket from auth context
+  useEffect(() => {
+    if (authSocket) {
+      socket = authSocket;
+      if (user?.id) {
+        socket.emit("join", user.id);
+      }
+    }
+  }, [authSocket, user]);
   const [friends, setFriends] = useState<User[]>([]);
   const [nonFriends, setNonFriends] = useState<User[]>([]); // ✅ added
   const [sortBy, setSortBy] = useState<"name" | "date">("name");
@@ -84,7 +96,12 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      // Clear friends and non-friends when user logs out
+      setFriends([]);
+      setNonFriends([]);
+      return;
+    }
 
     refreshAll();
 
@@ -96,14 +113,28 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
       console.log("🔁 Friend or non-friend list updated via WebSocket");
       refreshAll();
 
-      // ✅ Dispatch a global event for other contexts (like MessagesProvider)
+      // Dispatch a global event for other contexts (like MessagesProvider)
       window.dispatchEvent(new Event("refreshFriends"));
     };
 
     socket.on("refresh_friends", handleFriendUpdate);
 
+    // Handle logout event
+    const handleLogout = () => {
+      setFriends([]);
+      setNonFriends([]);
+      if (socket.connected) {
+        socket.disconnect();
+      }
+    };
+
+    // Add event listener for logout
+    window.addEventListener('user_logged_out', handleLogout);
+
     return () => {
+      // Cleanup socket listeners
       socket.off("refresh_friends", handleFriendUpdate);
+      window.removeEventListener('user_logged_out', handleLogout);
     };
   }, [user?.id]);
 
