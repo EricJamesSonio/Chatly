@@ -5,6 +5,7 @@ export const createMessagesTable = async (db) => {
       sender_id INT NOT NULL,
       receiver_id INT NOT NULL,
       message TEXT NOT NULL,
+      is_read TINYINT(1) DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
       FOREIGN KEY (receiver_id) REFERENCES users(id) ON DELETE CASCADE

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import Navbar from "../components/Navbar";
 import ChatSidebar from "../components/ChatSidebar";
-import ChatModal from "../components/ChatModal"; // ⬅ Add this import
+import ChatModal from "../components/ChatModal";
+import { useMessages } from "../context/MessagesContext";
 import "../css/Layout.css";
 import "../css/ChatSidebar.css";
 
@@ -10,26 +11,26 @@ interface LayoutProps {
   showSidebar?: boolean;
 }
 
-const dummyUsers = [
-  { id: 1, name: "Sophia" },
-  { id: 2, name: "Mark" },
-  { id: 3, name: "Ella" },
-];
-
 const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<{ id: number; name: string } | null>(null);
+  const [openChats, setOpenChats] = useState<number[]>([]);
+  const { chatUsers } = useMessages();
 
-  const toggleSidebar = () => {
-    setIsSidebarExpanded(!isSidebarExpanded);
-  };
+  const toggleSidebar = () => setIsSidebarExpanded(!isSidebarExpanded);
 
   const handleUserSelect = (userId: number) => {
-    const user = dummyUsers.find((u) => u.id === userId);
-    if (user) setSelectedUser(user);
+    setOpenChats((prev) => {
+      if (!prev.includes(userId)) return [...prev, userId];
+      return prev;
+    });
   };
 
-  const closeChat = () => setSelectedUser(null);
+  const closeChat = (userId: number) => {
+    setOpenChats((prev) => prev.filter((id) => id !== userId));
+  };
+
+  // Get full user objects for open chats
+  const selectedUsers = chatUsers.filter((u) => openChats.includes(u.id));
 
   return (
     <div className="layout-wrapper">
@@ -40,7 +41,7 @@ const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
           isExpanded={isSidebarExpanded}
           onToggle={toggleSidebar}
           onUserSelect={handleUserSelect}
-          activeUserId={selectedUser?.id || null}
+          activeUserId={openChats[openChats.length - 1] || null}
         />
       )}
 
@@ -52,14 +53,23 @@ const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
         {children}
       </main>
 
-      {/* ⬇ Render ChatModal OUTSIDE the sidebar */}
-      {selectedUser && (
-        <ChatModal
-          isOpen={true}
-          onClose={closeChat}
-          userName={selectedUser.name}
-        />
-      )}
+      {/* Multiple chat modals */}
+      <div
+        className="chat-modals-container"
+        style={{
+          right: isSidebarExpanded ? 330 : 70,
+        }}
+      >
+        {selectedUsers.map((user, index) => (
+          <ChatModal
+            key={user.id}
+            isOpen={true}
+            onClose={() => closeChat(user.id)}
+            user={user} // ✅ pass full user object
+            style={{ bottom: 0, right: `${index * 360}px` }}
+          />
+        ))}
+      </div>
     </div>
   );
 };

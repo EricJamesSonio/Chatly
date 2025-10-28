@@ -136,6 +136,15 @@ async deleteByUsers(user_id, friend_id) {
   );
   return true;
 }
+// ✅ Get friend request by ID
+async getById(id) {
+  const [rows] = await this.db.execute(
+    `SELECT * FROM friendlist WHERE id = ? LIMIT 1`,
+    [id]
+  );
+  return rows;
+}
+
 
 
 

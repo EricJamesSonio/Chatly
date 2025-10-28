@@ -1,4 +1,5 @@
 import React from "react";
+import UserAvatar from "./UserAvatar";
 import "../css/SidebarChatUser.css";
 
 interface SidebarChatUserProps {
@@ -21,8 +22,7 @@ const SidebarChatUser: React.FC<SidebarChatUserProps> = ({
       className={`sidebar-chat-user ${isActive ? "active" : ""}`}
       onClick={onClick}
     >
-      <img className="user-avatar" src={avatar} alt={name} />
-
+      <UserAvatar avatar={avatar} isActive={isActive} size={50} />
       <div className="user-info">
         <h4>{name}</h4>
         <p>{lastMessage}</p>
