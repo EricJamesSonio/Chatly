@@ -17,13 +17,14 @@ interface ChatUser {
 }
 
 interface MessagesContextType {
-  messages: Record<number, Message[]>; // keyed by userId
+  messages: Record<number, Message[]>;
   chatUsers: ChatUser[];
   selectedUserId: number | null;
   setSelectedUserId: (id: number | null) => void;
   sendMessage: (receiverId: number, message: string) => Promise<void>;
   refreshMessages: (userId: number) => Promise<void>;
   socket: Socket;
+  activeUsers: number[]; // ✅ required
 }
 
 const MessagesContext = createContext<MessagesContextType | undefined>(undefined);
@@ -36,6 +37,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [messages, setMessages] = useState<Record<number, Message[]>>({});
   const [chatUsers, setChatUsers] = useState<ChatUser[]>([]);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [activeUsers, setActiveUsers] = useState<number[]>([]); // ✅ inside provider
 
   // Fetch friends to chat with
   const fetchChatUsers = async () => {
@@ -69,47 +71,43 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          sender_id: user.id,
-          receiver_id: receiverId,
+          senderId: user.id,
+          receiverId,
           message: messageText,
         }),
       });
       const message: Message = await res.json();
 
-      // Update local state
       setMessages((prev) => {
         const prevMessages = prev[receiverId] || [];
         return { ...prev, [receiverId]: [...prevMessages, message] };
       });
 
-      // Emit socket event to receiver
       socket.emit("send_message", message);
     } catch (err) {
       console.error("❌ Failed to send message", err);
     }
   };
 
-  // Socket.IO listeners
-useEffect(() => {
-  if (!user?.id) return;
-
-  fetchChatUsers();
-
-  // Listen to global friend refresh events
-  const handleRefresh = () => {
-    fetchChatUsers();
-  };
-
-  window.addEventListener("refreshFriends", handleRefresh);
-
-  return () => {
-    window.removeEventListener("refreshFriends", handleRefresh);
-  };
-}, [user?.id]);
-
-
+  // Socket: update active users
   useEffect(() => {
+    socket.on("update_active_users", (userIds: number[]) => {
+      setActiveUsers(userIds);
+    });
+
+    return () => {
+      socket.off("update_active_users");
+    };
+  }, []);
+
+  // Fetch friends & handle refresh
+  useEffect(() => {
+    if (!user?.id) return;
     fetchChatUsers();
+
+    const handleRefresh = () => fetchChatUsers();
+    window.addEventListener("refreshFriends", handleRefresh);
+    return () => window.removeEventListener("refreshFriends", handleRefresh);
   }, [user?.id]);
 
   return (
@@ -122,6 +120,7 @@ useEffect(() => {
         sendMessage,
         refreshMessages,
         socket,
+        activeUsers, // ✅ include here to satisfy type
       }}
     >
       {children}
