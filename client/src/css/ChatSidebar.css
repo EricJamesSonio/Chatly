@@ -431,3 +431,40 @@
 .chat-user.unread .chat-last {
   color: rgba(255, 255, 255, 0.9); /* slightly brighter last message */
 }
+/* Unread badge (default) */
+.unread-badge {
+  display: inline-flex;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #06202a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto; /* default: right of user info */
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.2s ease;
+}
+
+/* When sidebar is collapsed, move badge to overlay avatar */
+.chat-sidebar.collapsed .unread-badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  margin-left: 0;
+  font-size: 0.65rem;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  z-index: 5;
+}
+
+/* Make sure avatar container is relative for positioning badge */
+.chat-avatar-container {
+  position: relative;
+  display: inline-block;
+}
