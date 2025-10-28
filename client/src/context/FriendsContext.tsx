@@ -21,6 +21,7 @@ interface User {
 
 interface FriendsContextType {
   friends: User[];
+  nonFriends: User[]; // ✅ added
   sortBy: "name" | "date";
   setSortBy: (sort: "name" | "date") => void;
   selectedFriend: User | null;
@@ -30,6 +31,7 @@ interface FriendsContextType {
   loading: boolean;
   error: string | null;
   refreshFriends: () => Promise<void>;
+  refreshNonFriends: () => Promise<void>; // ✅ added
 }
 
 const FriendsContext = createContext<FriendsContextType | undefined>(undefined);
@@ -40,39 +42,58 @@ const socket = io("http://localhost:5000");
 export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const [friends, setFriends] = useState<User[]>([]);
+  const [nonFriends, setNonFriends] = useState<User[]>([]); // ✅ added
   const [sortBy, setSortBy] = useState<"name" | "date">("name");
   const [selectedFriend, setSelectedFriend] = useState<User | null>(null);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // ✅ Fetch accepted friends
   const refreshFriends = async () => {
     if (!user?.id) return;
     try {
-      setLoading(true);
       const res = await fetch(`http://localhost:5000/api/friends/${user.id}`);
       if (!res.ok) throw new Error("Failed to fetch friends");
       const data = await res.json();
       setFriends(data);
     } catch (err) {
+      console.error("❌ Error fetching friends:", err);
       setError("Failed to refresh friends");
-      console.error(err);
-    } finally {
-      setLoading(false);
     }
+  };
+
+  // ✅ Fetch users that are NOT friends
+  const refreshNonFriends = async () => {
+    if (!user?.id) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/friends/not-friends/${user.id}`);
+      if (!res.ok) throw new Error("Failed to fetch non-friends");
+      const data = await res.json();
+      setNonFriends(data);
+    } catch (err) {
+      console.error("❌ Error fetching non-friends:", err);
+    }
+  };
+
+  // ✅ Refresh both friends + non-friends together
+  const refreshAll = async () => {
+    setLoading(true);
+    await Promise.all([refreshFriends(), refreshNonFriends()]);
+    setLoading(false);
   };
 
   useEffect(() => {
     if (!user?.id) return;
-    refreshFriends();
+    refreshAll();
 
     // ✅ Join the user’s private room
     socket.emit("join", user.id);
 
-    // ✅ Listen for real-time updates
+    // ✅ Listen for live updates
     socket.on("refresh_friends", () => {
-      console.log("🔁 Friend list updated from WebSocket");
-      refreshFriends();
+      console.log("🔁 Friend or non-friend list updated via WebSocket");
+      refreshAll();
     });
 
     return () => {
@@ -92,6 +113,7 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     <FriendsContext.Provider
       value={{
         friends: sortedFriends,
+        nonFriends, // ✅ added
         sortBy,
         setSortBy,
         selectedFriend,
@@ -101,6 +123,7 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         loading,
         error,
         refreshFriends,
+        refreshNonFriends, // ✅ added
       }}
     >
       {children}
