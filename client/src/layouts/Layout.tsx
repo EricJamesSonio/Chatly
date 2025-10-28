@@ -29,6 +29,7 @@ const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
     setOpenChats((prev) => prev.filter((id) => id !== userId));
   };
 
+  // Get full user objects for open chats
   const selectedUsers = chatUsers.filter((u) => openChats.includes(u.id));
 
   return (
@@ -64,8 +65,7 @@ const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
             key={user.id}
             isOpen={true}
             onClose={() => closeChat(user.id)}
-            userId={user.id}
-            userName={user.name}
+            user={user} // ✅ pass full user object
             style={{ bottom: 0, right: `${index * 360}px` }}
           />
         ))}

@@ -7,16 +7,19 @@ import UserAvatar from "./UserAvatar"; // <-- import here
 interface ChatModalProps {
   isOpen: boolean;
   onClose: () => void;
-  userId: number;
-  userName: string;
+  user: {
+    id: number;
+    name: string;
+    profile_image?: string;
+  };
   style?: React.CSSProperties;
 }
+
 
 const ChatModal: React.FC<ChatModalProps> = ({
   isOpen,
   onClose,
-  userId,
-  userName,
+  user,
   style,
 }) => {
   const { messages, sendMessage, refreshMessages, socket, activeUsers } = useMessages();
@@ -30,15 +33,15 @@ const ChatModal: React.FC<ChatModalProps> = ({
   }, [socket]);
 
   useEffect(() => {
-    if (isOpen) refreshMessages(userId);
-  }, [isOpen, userId, refreshMessages]);
+    if (isOpen) refreshMessages(user.id);
+  }, [isOpen, user.id, refreshMessages]);
 
   useEffect(() => {
     if (!socketRef.current) return;
 
     const handleNewMessage = (msg: any) => {
-      if (msg.sender_id === userId || msg.receiver_id === userId) {
-        refreshMessages(userId);
+      if (msg.sender_id === user.id || msg.receiver_id === user.id) {
+        refreshMessages(user.id);
       }
     };
 
@@ -46,18 +49,18 @@ const ChatModal: React.FC<ChatModalProps> = ({
     return () => {
       socketRef.current?.off("new_message", handleNewMessage);
     };
-  }, [userId, refreshMessages]);
+  }, [user.id, refreshMessages]);
 
   useEffect(() => {
     chatBodyRef.current?.scrollTo({
       top: chatBodyRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages[userId]]);
+  }, [messages[user.id]]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
-    await sendMessage(userId, input);
+    await sendMessage(user.id, input);
     setInput("");
   };
 
@@ -66,31 +69,34 @@ const ChatModal: React.FC<ChatModalProps> = ({
   return (
     <div className="chat-modal-overlay" style={style}>
       <div className={`chat-modal ${minimized ? "minimized" : ""}`}>
-        <header className="chat-modal-header">
+      <header className="chat-modal-header">
+        <div className="chat-avatar-wrapper">
           <UserAvatar
-            avatar={`/assets/avatar-${userId}.jpg`} // replace with real avatar if needed
-            isActive={activeUsers.includes(userId)}
+            avatar={user.profile_image || "/assets/default.png"} 
             size={50}
-            alt={userName}
+            alt={user.name}
           />
-          <h3>{userName}</h3>
-          <div>
-            <button
-              className="minimize-btn"
-              onClick={() => setMinimized((prev) => !prev)}
-            >
-              {minimized ? "▢" : "_"}
-            </button>
-            <button className="close-btn" onClick={onClose}>
-              X
-            </button>
-          </div>
-        </header>
+          {activeUsers.includes(user.id) && <span className="active-indicator" />}
+        </div>
+        <h3>{user.name}</h3>
+        <div>
+          <button
+            className="minimize-btn"
+            onClick={() => setMinimized((prev) => !prev)}
+          >
+            {minimized ? "▢" : "_"}
+          </button>
+          <button className="close-btn" onClick={onClose}>
+            X
+          </button>
+        </div>
+      </header>
+
 
         {!minimized && (
           <>
             <div className="chat-body" ref={chatBodyRef}>
-              {(messages[userId] || []).map((msg) => {
+              {(messages[user.id] || []).map((msg) => {
                 const time = new Date(msg.created_at).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -98,7 +104,7 @@ const ChatModal: React.FC<ChatModalProps> = ({
                 return (
                   <div
                     key={msg.id}
-                    className={`chat-message ${msg.sender_id === userId ? "received" : "sent"}`}
+                    className={`chat-message ${msg.sender_id === user.id ? "received" : "sent"}`}
                   >
                     <div className="message-text">{msg.message}</div>
                     <div className="message-time">{time}</div>
@@ -123,5 +129,6 @@ const ChatModal: React.FC<ChatModalProps> = ({
     </div>
   );
 };
+
 
 export default ChatModal;
