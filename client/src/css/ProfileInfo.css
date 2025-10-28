@@ -5,24 +5,24 @@
   background: #fff;
   border-radius: 10px;
   padding: 24px 30px;
-  margin: 60px auto 20px auto; /* increased top margin to clear avatar area */
+  margin: 60px auto 20px auto; /* keeps spacing from avatar/cover */
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
   box-sizing: border-box;
 }
 
-/* About Title */
+/* Title */
 .profile-info h3 {
   font-size: 1.4rem;
   font-weight: 700;
   color: #b10000;
-  margin-bottom: 20px; /* more breathing space below title */
+  margin-bottom: 20px;
 }
 
 /* Labels + Info */
 .profile-info p {
   font-size: 1rem;
   color: #333;
-  margin-bottom: 10px; /* slightly increased */
+  margin-bottom: 10px;
   line-height: 1.5;
 }
 
@@ -30,9 +30,67 @@
   color: #111;
 }
 
+/* Form Groups for Edit Mode */
+.profile-info .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+.profile-info .form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.profile-info .form-group input,
+.profile-info .form-group textarea {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.profile-info .form-group input:focus,
+.profile-info .form-group textarea:focus {
+  border-color: #b10000;
+  box-shadow: 0 0 3px rgba(177, 0, 0, 0.3);
+}
+
+.profile-info .form-group textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Button Group */
+.profile-info .button-group {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.profile-info .save-btn,
+.profile-info .edit-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #b10000;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.profile-info .save-btn:hover,
+.profile-info .edit-btn:hover {
+  background-color: #8a0000;
+}
+
 /* Social links */
 .profile-social-container {
-  margin-top: 25px; /* extra space before links */
+  margin-top: 25px;
 }
 
 .profile-social-container a {
