@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFriends } from "../context/FriendsContext";
 import MiniProfileModal from "../components/friends/MiniProfileModal";
-import FriendButtons from "../components/friends/FriendButtons";
 import FriendsHeader from "../components/friends/FriendsHeader";
 import FriendsList from "../components/friends/FriendsList";
 import FriendRequests from "../components/friends/FriendRequests";
@@ -10,6 +9,7 @@ import "../css/FriendsPage.css";
 const FriendsPage: React.FC = () => {
   const {
     friends,
+    nonFriends, // ✅ get non-friends from context
     sortBy,
     setSortBy,
     setSelectedFriend,
@@ -18,18 +18,9 @@ const FriendsPage: React.FC = () => {
     error,
   } = useFriends();
 
-  const [nonFriends, setNonFriends] = useState<any[]>([]);
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
   const [view, setView] = useState<"default" | "requests">("default");
   const currentUser = JSON.parse(localStorage.getItem("chatly_user") || "{}");
-
-  useEffect(() => {
-    if (!currentUser?.id) return;
-    fetch(`http://localhost:5000/api/friends/not-friends/${currentUser.id}`)
-      .then((res) => res.json())
-      .then(setNonFriends)
-      .catch(console.error);
-  }, [currentUser?.id]);
 
   const fetchPendingRequests = async () => {
     if (!currentUser?.id) return;
@@ -58,7 +49,7 @@ const FriendsPage: React.FC = () => {
       {view === "default" ? (
         <FriendsList
           friends={friends}
-          nonFriends={nonFriends}
+          nonFriends={nonFriends} // ✅ use context state
           currentUserId={currentUser.id}
           handleFriendClick={handleFriendClick}
         />

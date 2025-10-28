@@ -7,10 +7,10 @@ export const seedAccounts = async (db) => {
   const usernames = [
     'alice123',
     'bob123',
-    'charlie123',
-    'diana123',
-    'ethan123',
-    'fiona123'
+    'yellow123',
+    'spongebob123',
+    'red123',
+    'patrick123'
   ];
 
   const data = await Promise.all(
