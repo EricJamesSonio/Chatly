@@ -27,15 +27,39 @@ export default class MessageModel {
       receiver_id: receiverId,
       message,
       created_at: new Date(),
+      is_read: 0,
     };
+  }
+
+  async getUnreadCounts(userId) {
+    const [rows] = await this.db.execute(
+      `SELECT sender_id, COUNT(*) AS unread_count
+       FROM messages
+       WHERE receiver_id = ? AND is_read = 0
+       GROUP BY sender_id`,
+      [userId]
+    );
+
+    const counts = {};
+    rows.forEach((row) => {
+      counts[row.sender_id] = row.unread_count;
+    });
+
+    return counts;
+  }
+
+  async markMessagesAsRead(userId, senderId) {
+    await this.db.execute(
+      `UPDATE messages
+       SET is_read = 1
+       WHERE receiver_id = ? AND sender_id = ? AND is_read = 0`,
+      [userId, senderId]
+    );
   }
 
   async getLastMessagesForUser(userId) {
     const [rows] = await this.db.execute(
-      `SELECT 
-         m.*, 
-         u.name, 
-         u.profile_image 
+      `SELECT m.*, u.name, u.profile_image
        FROM messages m
        JOIN users u ON u.id = m.sender_id
        WHERE m.receiver_id = ?
