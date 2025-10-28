@@ -421,3 +421,10 @@
   outline: 2px solid rgba(56,189,248,0.14);
   outline-offset: 2px;
 }
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 8px;
+  display: inline-block;
+}

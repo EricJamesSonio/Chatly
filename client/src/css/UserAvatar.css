@@ -1,0 +1,23 @@
+.user-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.user-avatar-img {
+  display: block;
+  border-radius: 50%;
+}
+
+.active-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #4caf50;
+  border: 2px solid white;
+  border-radius: 50%;
+  z-index: 10;
+}

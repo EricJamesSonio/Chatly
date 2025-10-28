@@ -23,7 +23,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   onUserSelect,
   activeUserId,
 }) => {
-  const { chatUsers, socket } = useMessages(); // ✅ use context socket
+  const { chatUsers, socket, activeUsers } = useMessages();
   const currentUser = JSON.parse(localStorage.getItem("chatly_user") || "{}");
 
   const [lastMessages, setLastMessages] = useState<Record<number, Message>>({});
@@ -79,17 +79,23 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
       </button>
 
       <div className="chat-list">
-        {chatUsers.map((u) => (
+      {chatUsers.map((u) => {
+        const isOnline = activeUsers.includes(u.id); // check if user is online
+        return (
           <div
             key={u.id}
             className={`chat-user ${activeUserId === u.id ? "active" : ""}`}
             onClick={() => onUserSelect(u.id)}
           >
-            <img
-              className="chat-avatar"
-              src={u.profile_image || "/assets/avatar1.jpg"}
-              alt={u.name}
-            />
+        <div className="chat-avatar-container">
+          <img
+            className="chat-avatar"
+            src={u.profile_image || "/assets/avatar1.jpg"}
+            alt={u.name}
+          />
+          {activeUsers.includes(u.id) && <span className="active-indicator" />}
+        </div>
+
             <div className="chat-user-info">
               <div className="chat-name">{u.name}</div>
               <div className="chat-last">
@@ -97,7 +103,9 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
               </div>
             </div>
           </div>
-        ))}
+        );
+      })}
+
       </div>
     </div>
   );

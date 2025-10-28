@@ -46,6 +46,38 @@ io.on("connection", (socket) => {
   });
 });
 
+const onlineUsers = new Set();
+
+io.on("connection", (socket) => {
+  console.log(`🟢 New client connected: ${socket.id}`);
+
+  // When user joins
+  socket.on("join", (userId) => {
+    socket.userId = userId;
+    onlineUsers.add(userId);
+
+    console.log(`👤 User ${userId} joined their room`);
+
+    // Broadcast updated active users list
+    io.emit("update_active_users", Array.from(onlineUsers));
+  });
+
+  // Handle friend updates
+  socket.on("friend_update", (targetUserId) => {
+    io.to(`user_${targetUserId}`).emit("refresh_friends");
+  });
+
+  // When user disconnects
+  socket.on("disconnect", () => {
+    if (socket.userId) {
+      onlineUsers.delete(socket.userId);
+      io.emit("update_active_users", Array.from(onlineUsers));
+    }
+    console.log(`🔴 Client disconnected: ${socket.id}`);
+  });
+});
+
+
 // ✅ Make Socket.IO globally accessible (optional)
 app.set("io", io);
 
