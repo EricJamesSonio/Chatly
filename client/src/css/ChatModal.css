@@ -156,3 +156,19 @@
   border-radius: 50%;
   z-index: 10;
 }
+.chat-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.chat-avatar-wrapper .active-indicator {
+  position: absolute;
+  bottom: -2px; /* move outside */
+  right: -2px;  /* move outside */
+  width: 12px;  /* adjust size */
+  height: 12px;
+  background-color: #4caf50;
+  border: 2px solid white; /* optional: border around dot */
+  border-radius: 50%;
+  z-index: 10;
+}

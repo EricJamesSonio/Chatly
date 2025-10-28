@@ -21,6 +21,9 @@ Project contains.. :
 [Websocket]
 - install socker in client and backend!
 - do web socket set up in backend! and connect the client via using socket.io listening to the port of the server! so they are both conenctede!
+- used in :
+--> Active status (Knowing wich users are online!)
+--> In sync add friend, request sent, unfriend, chat auto sync with friends!
 
 
 <---------------------------------------- CLIENT SIDE DESIGN ------------------------------------------->
