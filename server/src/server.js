@@ -8,6 +8,7 @@ import friendlistRoutes from "./backend/routes/FriendListRoutes.js";
 import accountRoutes from "./backend/routes/AccountRoutes.js";
 import authRoutes from "./backend/routes/AuthRoutes.js";
 import userRoutes from "./backend/routes/UserRoutes.js";
+import messageRoutes from "./backend/routes/MessageRoutes.js";
 
 const app = express();
 app.use(cors());
@@ -53,6 +54,7 @@ app.use("/api/friends", friendlistRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/messages", messageRoutes);
 
 // Base route
 app.get("/", (req, res) => {

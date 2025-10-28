@@ -85,21 +85,28 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     if (!user?.id) return;
+
     refreshAll();
 
-    // ✅ Join the user’s private room
+    // Join private room
     socket.emit("join", user.id);
 
-    // ✅ Listen for live updates
-    socket.on("refresh_friends", () => {
+    // Listen for friend updates
+    const handleFriendUpdate = () => {
       console.log("🔁 Friend or non-friend list updated via WebSocket");
       refreshAll();
-    });
+
+      // ✅ Dispatch a global event for other contexts (like MessagesProvider)
+      window.dispatchEvent(new Event("refreshFriends"));
+    };
+
+    socket.on("refresh_friends", handleFriendUpdate);
 
     return () => {
-      socket.off("refresh_friends");
+      socket.off("refresh_friends", handleFriendUpdate);
     };
   }, [user?.id]);
+
 
   const sortedFriends = useMemo(() => {
     return [...friends].sort((a, b) =>
