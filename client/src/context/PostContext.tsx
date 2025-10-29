@@ -48,7 +48,8 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user?.id) return;
     setLoading(true);
     try {
-      const res = await axios.get(`/api/feed?userId=${user.id}`);
+      const res = await axios.get(`http://localhost:5000/api/feed?userId=${user.id}`);
+
       setPosts(res.data);
       setError(null);
     } catch (err: any) {
