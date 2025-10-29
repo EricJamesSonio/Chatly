@@ -4,11 +4,17 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 import { db } from "./database/db.js";
+
+// Existing routes
 import friendlistRoutes from "./backend/routes/FriendListRoutes.js";
 import accountRoutes from "./backend/routes/AccountRoutes.js";
 import authRoutes from "./backend/routes/AuthRoutes.js";
 import userRoutes from "./backend/routes/UserRoutes.js";
 import messageRoutes from "./backend/routes/MessageRoutes.js";
+
+// New routes
+import postRoutes from "./backend/routes/PostRoutes.js";
+import feedRoutes from "./backend/routes/FeedRoutes.js";
 
 const app = express();
 app.use(cors());
@@ -20,32 +26,12 @@ const server = createServer(app);
 // ✅ Initialize Socket.IO
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // or your frontend port
+    origin: "http://localhost:5173", // frontend port
     methods: ["GET", "POST", "DELETE"],
   },
 });
 
 // ✅ Handle socket connections
-io.on("connection", (socket) => {
-  console.log(`🟢 New client connected: ${socket.id}`);
-
-  // When user joins (optional for tracking)
-  socket.on("join", (userId) => {
-    socket.join(`user_${userId}`);
-    console.log(`👤 User ${userId} joined their room`);
-  });
-
-  // Listen for friend updates (coming from backend logic)
-  socket.on("friend_update", (targetUserId) => {
-    console.log(`🔔 Friend update for user ${targetUserId}`);
-    io.to(`user_${targetUserId}`).emit("refresh_friends");
-  });
-
-  socket.on("disconnect", () => {
-    console.log(`🔴 Client disconnected: ${socket.id}`);
-  });
-});
-
 const onlineUsers = new Set();
 
 io.on("connection", (socket) => {
@@ -55,38 +41,38 @@ io.on("connection", (socket) => {
   socket.on("join", (userId) => {
     socket.userId = userId;
     onlineUsers.add(userId);
-
     console.log(`👤 User ${userId} joined their room`);
 
-    // Broadcast updated active users list
+    // Broadcast updated active users
     io.emit("update_active_users", Array.from(onlineUsers));
   });
 
-  // Handle friend updates
+  // Friend updates
   socket.on("friend_update", (targetUserId) => {
     io.to(`user_${targetUserId}`).emit("refresh_friends");
   });
 
-  // When user disconnects
+  // Disconnect
   socket.on("disconnect", () => {
-    if (socket.userId) {
-      onlineUsers.delete(socket.userId);
-      io.emit("update_active_users", Array.from(onlineUsers));
-    }
+    if (socket.userId) onlineUsers.delete(socket.userId);
+    io.emit("update_active_users", Array.from(onlineUsers));
     console.log(`🔴 Client disconnected: ${socket.id}`);
   });
 });
 
-
-// ✅ Make Socket.IO globally accessible (optional)
+// Make Socket.IO globally accessible
 app.set("io", io);
 
-// Routes
+// ✅ Routes
 app.use("/api/friends", friendlistRoutes);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
+
+// New post/feed routes
+app.use(postRoutes);
+app.use(feedRoutes);
 
 // Base route
 app.get("/", (req, res) => {

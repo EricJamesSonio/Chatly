@@ -19,13 +19,18 @@ const FriendsPage: React.FC = () => {
   } = useFriends();
 
   const [pendingRequests, setPendingRequests] = useState<any[]>([]);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState<number>(0);
   const [view, setView] = useState<"default" | "requests">("default");
   const currentUser = JSON.parse(localStorage.getItem("chatly_user") || "{}");
 
   const fetchPendingRequests = async () => {
     if (!currentUser?.id) return;
     const res = await fetch(`http://localhost:5000/api/friends/pending/${currentUser.id}`);
-    if (res.ok) setPendingRequests(await res.json());
+    if (res.ok) {
+      const requests = await res.json();
+      setPendingRequests(requests);
+      setPendingRequestsCount(requests.length);
+    }
   };
 
   const handleFriendClick = (friend: any) => {
@@ -44,6 +49,7 @@ const FriendsPage: React.FC = () => {
         setSortBy={setSortBy}
         setView={setView}
         fetchPendingRequests={fetchPendingRequests}
+        pendingRequestsCount={pendingRequestsCount}
       />
 
       {view === "default" ? (

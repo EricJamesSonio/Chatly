@@ -11,6 +11,7 @@ const Navbar: React.FC = () => {
         <Link to="/profile">Profile</Link>
         <Link to="/friends">Friends</Link>
         <Link to="/auth">Login / Signup</Link> {/* ✅ new link */}
+         <Link to="/feed">NewFeed</Link> {/* ✅ new link */}
       </div>
 
       {/* Center Search */}

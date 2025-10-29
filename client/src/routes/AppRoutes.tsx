@@ -6,6 +6,7 @@ import Settings from "../pages/Settings";
 import FriendsPage from "../pages/FriendsPage";
 import AuthPage from "../pages/AuthPage";
 import Layout from "../layouts/Layout";
+import FeedPage from "../pages/FeedPage";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -52,7 +53,17 @@ const AppRoutes: React.FC = () => {
           </Layout>
         }
       />
+          <Route
+      path="/feed"
+      element={
+        <Layout showSidebar={true}>
+          <FeedPage />
+        </Layout>
+      }
+    />
     </Routes>
+    
+    
   );
 };
 

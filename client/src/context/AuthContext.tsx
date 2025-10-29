@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
+import { io, Socket } from "socket.io-client";
 
 
 interface User {
@@ -12,9 +13,13 @@ interface AuthContextType {
   login: (username: string, password: string) => Promise<boolean>;
   signup: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
+  socket: Socket | null;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Create a single socket instance
+const socket = io("http://localhost:5000");
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -65,12 +70,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const logout = () => {
+    // Emit logout event to server
+    socket.emit('logout');
+    
+    // Clear user data
     setUser(null);
     localStorage.removeItem("chatly_user");
+    
+    // Clear any friends list data from local storage if exists
+    localStorage.removeItem('friends_list');
+    
+    // Emit a custom event to notify other components to clear their state
+    window.dispatchEvent(new Event('user_logged_out'));
+    
+    // Disconnect socket if needed
+    if (socket.connected) {
+      socket.disconnect();
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, socket }}>
       {children}
     </AuthContext.Provider>
   );
