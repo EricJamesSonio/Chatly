@@ -1,0 +1,40 @@
+.comment {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  font-family: system-ui, sans-serif;
+}
+
+.comment-header {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.comment-user {
+  font-size: 0.95rem;
+}
+
+.comment-content {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 4px 0 8px;
+  word-break: break-word;
+}
+
+.comment-delete {
+  align-self: flex-end;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+
+.comment-delete:hover {
+  background: #f5f5f5;
+}

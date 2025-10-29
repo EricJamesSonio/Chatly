@@ -2,6 +2,7 @@ import React from "react";
 import { usePosts } from "../context/PostContext";
 import CreatePost from "../components/newsfeed/CreatePost";
 import Post from "../components/newsfeed/Post";
+import "../css/FeedPage.css";
 
 const FeedPage: React.FC = () => {
   const { posts, loading, error, refreshPosts } = usePosts();
