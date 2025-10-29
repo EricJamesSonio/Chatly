@@ -16,13 +16,35 @@ export const getPosts = (db) => async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
+
   try {
     const [posts] = await postModel(db).getAll(limit, offset);
-    res.json(posts);
+
+    // ✅ Parse JSON columns
+    const formattedPosts = posts.map(post => ({
+      ...post,
+      media: safeJSON(post.media),
+      likes: safeJSON(post.likes),
+      comments: safeJSON(post.comments),
+    }));
+
+    res.json(formattedPosts);
   } catch (err) {
+    console.error("❌ getPosts error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
+// Helper function to safely parse JSON fields
+const safeJSON = (data) => {
+  try {
+    return typeof data === "string" ? JSON.parse(data) : (data || []);
+  } catch {
+    return [];
+  }
+};
+
+
 
 export const getPostById = (db) => async (req, res) => {
   const { postId } = req.params;
