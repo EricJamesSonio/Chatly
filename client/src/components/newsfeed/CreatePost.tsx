@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import MediaUploader from "./MediaUploader";
+import "../../css/CreatePost.css";
 
 interface CreatePostProps {
   refreshFeed?: () => void;

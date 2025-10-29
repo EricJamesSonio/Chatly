@@ -1,4 +1,5 @@
 import React from "react";
+import "../../css/Comment.css";
 
 interface CommentProps {
   id: number;
@@ -9,13 +10,13 @@ interface CommentProps {
 
 const Comment: React.FC<CommentProps> = ({ id, userId, content, onDelete }) => {
   return (
-    <div style={{ padding: "6px 0", borderBottom: "1px solid #eee" }}>
-      <strong>User {userId}:</strong> {content}
+    <div className="comment">
+      <div className="comment-header">
+        <span className="comment-user">User {userId}</span>
+      </div>
+      <p className="comment-content">{content}</p>
       {onDelete && (
-        <button
-          onClick={() => onDelete(id)}
-          style={{ marginLeft: "10px", color: "red" }}
-        >
+        <button className="comment-delete" onClick={() => onDelete(id)}>
           Delete
         </button>
       )}

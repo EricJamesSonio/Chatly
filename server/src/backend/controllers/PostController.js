@@ -5,12 +5,27 @@ const postModel = (db) => new Post(db);
 export const createPost = (db) => async (req, res) => {
   try {
     const { user_id, content, media } = req.body;
-    const [result] = await postModel(db).create({ user_id, content, media });
-    res.status(201).json({ id: result.insertId, message: "Post created" });
+
+    const [result] = await db.execute(
+      "INSERT INTO posts (user_id, content, media) VALUES (?, ?, ?)",
+      [user_id, content, JSON.stringify(media || [])]
+    );
+
+    const [newPost] = await db.execute(
+      "SELECT * FROM posts WHERE id = ?",
+      [result.insertId]
+    );
+
+    res.status(201).json({
+      message: "Post created",
+      post: newPost[0], // ✅ includes created_at
+    });
   } catch (err) {
+    console.error("❌ createPost error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 export const getPosts = (db) => async (req, res) => {
   const page = parseInt(req.query.page) || 1;
@@ -103,13 +118,33 @@ export const unlikePost = (db) => async (req, res) => {
 export const addComment = (db) => async (req, res) => {
   const { postId } = req.params;
   const { user_id, content } = req.body;
+
   try {
-    const [result] = await postModel(db).addComment({ post_id: postId, user_id, content });
-    res.status(201).json({ commentId: result.insertId, message: "Comment added" });
+    // 1️⃣ Insert new comment
+    const [result] = await db.execute(
+      "INSERT INTO comments (post_id, user_id, content) VALUES (?, ?, ?)",
+      [postId, user_id, content]
+    );
+
+    const commentId = result.insertId;
+
+    // 2️⃣ Fetch the newly created comment (with timestamp)
+    const [newComment] = await db.execute(
+      "SELECT * FROM comments WHERE id = ?",
+      [commentId]
+    );
+
+    // 3️⃣ Return the new comment object
+    res.status(201).json({
+      message: "Comment added",
+      comment: newComment[0], // includes id, user_id, content, created_at
+    });
   } catch (err) {
+    console.error("❌ addComment error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 export const deleteComment = (db) => async (req, res) => {
   const { commentId } = req.params;
