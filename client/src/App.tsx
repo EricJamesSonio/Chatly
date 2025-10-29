@@ -3,8 +3,9 @@ import { BrowserRouter as Router } from "react-router-dom";
 import { ThemeProvider } from "./context/ThemeContext";
 import { ChatProvider } from "./context/ChatContext";
 import { FriendsProvider } from "./context/FriendsContext";
-import { MessagesProvider } from "./context/MessagesContext"; // ✅ import MessagesProvider
+import { MessagesProvider } from "./context/MessagesContext";
 import { AuthProvider } from "./context/AuthContext";
+import { PostProvider } from "./context/PostContext"; // ✅ Import PostProvider
 import AppRoutes from "./routes/AppRoutes";
 
 import "./css/global.css";
@@ -16,10 +17,12 @@ const App: React.FC = () => {
       <AuthProvider>
         <ChatProvider>
           <FriendsProvider>
-            <MessagesProvider> {/* ✅ Wrap your app with MessagesProvider */}
-              <Router>
-                <AppRoutes />
-              </Router>
+            <MessagesProvider>
+              <PostProvider> {/* ✅ Wrap app with PostProvider */}
+                <Router>
+                  <AppRoutes />
+                </Router>
+              </PostProvider>
             </MessagesProvider>
           </FriendsProvider>
         </ChatProvider>
