@@ -2,33 +2,41 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
-
 import { db } from "./database/db.js";
 
-// Existing routes
+// ✅ Import Routes
 import friendlistRoutes from "./backend/routes/FriendListRoutes.js";
 import accountRoutes from "./backend/routes/AccountRoutes.js";
 import authRoutes from "./backend/routes/AuthRoutes.js";
 import userRoutes from "./backend/routes/UserRoutes.js";
 import messageRoutes from "./backend/routes/MessageRoutes.js";
-
-// New routes
 import postRoutes from "./backend/routes/PostRoutes.js";
 import feedRoutes from "./backend/routes/FeedRoutes.js";
 
 const app = express();
-app.use(cors());
 app.use(express.json());
+
+// ✅ CORS configuration (local + Render)
+const allowedOrigins = [
+  "http://localhost:5173",                    // local React dev
+  "https://your-frontend-name.onrender.com"   // deployed frontend (replace this)
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
+}));
 
 // ✅ Create HTTP server
 const server = createServer(app);
 
-// ✅ Initialize Socket.IO
+// ✅ Initialize Socket.IO with same CORS rules
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173", // frontend port
-    methods: ["GET", "POST", "DELETE"],
-  },
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "DELETE"]
+  }
 });
 
 // ✅ Handle socket connections
@@ -60,7 +68,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Make Socket.IO globally accessible
+// ✅ Make Socket.IO globally accessible
 app.set("io", io);
 
 // ✅ Routes
@@ -69,15 +77,14 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/messages", messageRoutes);
-
-// New post/feed routes
 app.use(postRoutes);
 app.use(feedRoutes);
 
-// Base route
+// ✅ Base route (health check)
 app.get("/", (req, res) => {
   res.send("✅ Server is running with WebSockets!");
 });
 
-const PORT = 5000;
+// ✅ Dynamic port for Render
+const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
