@@ -30,7 +30,7 @@ interface MessagesContextType {
 const MessagesContext = createContext<MessagesContextType | undefined>(undefined);
 
 // Initialize socket outside to persist across components
-const socket = io("${API_URL}");
+const socket = io(API_URL);
 
 export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
