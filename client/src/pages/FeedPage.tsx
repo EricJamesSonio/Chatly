@@ -16,8 +16,8 @@ const FeedPage: React.FC = () => {
     Array.isArray(posts) && posts.length > 0
       ? posts.map((p: any) => ({
           id: p.id,
-          userId: p.userId ?? p.user_id,
-          userName: p.userName ?? p.user_name,
+          userId: p.user_id ?? p.userId,
+          userName: p.user_name ?? p.userName,
           content: p.content,
           media: p.media ?? [],
           likes: p.likes ?? [],

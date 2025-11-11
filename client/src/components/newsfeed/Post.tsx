@@ -84,7 +84,7 @@ const Post: React.FC<PostProps> = ({
 
       <p style={{ marginBottom: "8px" }}>{content}</p>
 
-      {media.length > 0 && (
+      {media && media.length > 0 && (
         <div
           style={{
             display: "flex",
@@ -93,7 +93,7 @@ const Post: React.FC<PostProps> = ({
             marginBottom: "8px",
           }}
         >
-          {media.map((m: { url: string; type: string }, idx: number) =>
+          {media.map((m, idx) =>
             m.type === "image" ? (
               <img
                 key={idx}
