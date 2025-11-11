@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../css/FriendButton.css";
 import { useFriends } from "../../context/FriendsContext"; // ✅ import hook
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface FriendButtonsProps {
   currentUserId: number;
@@ -23,7 +24,7 @@ const FriendButtons: React.FC<FriendButtonsProps> = ({
       if (!currentUserId || !targetUserId) return;
       try {
         const res = await fetch(
-          `http://localhost:5000/api/friends/status/${currentUserId}/${targetUserId}`
+          `${API_URL}/api/friends/status/${currentUserId}/${targetUserId}`
         );
         if (res.ok) {
           const data = await res.json();
@@ -69,7 +70,7 @@ const FriendButtons: React.FC<FriendButtonsProps> = ({
       setLoading(true);
 
       const res = await fetch(
-        `http://localhost:5000/api/friends/${currentUserId}/${targetUserId}`,
+        `${API_URL}/api/friends/${currentUserId}/${targetUserId}`,
         { method: "DELETE" }
       );
 

@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../layouts/Layout";
 import ProfileCard from "../components/ProfileCard";
-import ProfileInfo from "../components/ProfileInfo";
+import ProfileInfo, { type User } from "../components/ProfileInfo"; // ✅ type-only import
 import "../css/Profile.css";
+const API_URL = import.meta.env.VITE_API_URL;
+interface UserWithUsername extends User {
+  username?: string; // include username from account
+}
 
 const Profile: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<UserWithUsername | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false); // Edit mode toggle
 
   useEffect(() => {
     const storedUser = localStorage.getItem("chatly_user");
@@ -22,23 +27,23 @@ const Profile: React.FC = () => {
 
     const fetchUser = async () => {
       try {
-        // Step 1️⃣: Fetch account info to get user_id
-        const accRes = await fetch(`http://localhost:5000/api/accounts/${accountId}`);
+        // Fetch account to get user_id
+        const accRes = await fetch(`${API_URL}/api/accounts/${accountId}`);
         if (!accRes.ok) throw new Error("Failed to fetch account data");
         const accountData = await accRes.json();
 
-        // Step 2️⃣: Fetch the user profile using user_id
-        const userId = accountData.user_id;
-        const userRes = await fetch(`http://localhost:5000/api/users/${userId}`);
+        // Fetch user profile
+        const userRes = await fetch(`${API_URL}/api/users/${accountData.user_id}`);
         if (!userRes.ok) throw new Error("Failed to fetch user profile");
-
         const userData = await userRes.json();
 
-        // Step 3️⃣: Merge both account and user data
-        setUser({
+        // ✅ Combine account username safely
+        const combinedUser: UserWithUsername = {
           ...userData,
           username: accountData.username,
-        });
+        };
+
+        setUser(combinedUser);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -49,37 +54,50 @@ const Profile: React.FC = () => {
     fetchUser();
   }, []);
 
-  if (loading)
-    return (
-      <Layout>
-        <p className="loading">Loading profile...</p>
-      </Layout>
-    );
+  const handleSave = async (updatedUser: UserWithUsername) => {
+    if (!user) return;
 
-  if (error)
-    return (
-      <Layout>
-        <p className="error">❌ {error}</p>
-      </Layout>
-    );
+    try {
+      const res = await fetch(`${API_URL}/api/users/${user.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedUser),
+      });
+      if (!res.ok) throw new Error("Failed to update user profile");
 
-  if (!user)
-    return (
-      <Layout>
-        <p>No user found</p>
-      </Layout>
-    );
+      setUser(updatedUser); // Update locally
+      setIsEditing(false);  // Switch back to view mode
+    } catch (err: any) {
+      alert(err.message);
+    }
+  };
+
+  if (loading) return <Layout><p className="loading">Loading profile...</p></Layout>;
+  if (error) return <Layout><p className="error">❌ {error}</p></Layout>;
+  if (!user) return <Layout><p>No user found</p></Layout>;
 
   return (
     <Layout>
       <div className="profile-page">
         <ProfileCard
-          name={user.name || user.username}
+          name={user.name || user.username || "Unknown"}
           profile_image={user.profile_image || "/assets/default-avatar.png"}
           cover_photo={user.cover_photo || "/assets/default-cover.jpg"}
           location={user.location || "No location specified"}
         />
-        <ProfileInfo user={user} />
+
+        <button
+          className="edit-btn"
+          onClick={() => setIsEditing(!isEditing)}
+        >
+          {isEditing ? "Cancel" : "Edit Profile"}
+        </button>
+
+        <ProfileInfo
+          user={user}
+          isEditing={isEditing}
+          onSave={handleSave}
+        />
       </div>
     </Layout>
   );

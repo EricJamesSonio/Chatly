@@ -6,6 +6,7 @@ interface Props {
   setSortBy: (v: "name" | "date") => void;
   setView: (v: "default" | "requests") => void;
   fetchPendingRequests: () => void;
+  pendingRequestsCount: number;
 }
 
 const FriendsHeader: React.FC<Props> = ({
@@ -14,6 +15,7 @@ const FriendsHeader: React.FC<Props> = ({
   setSortBy,
   setView,
   fetchPendingRequests,
+  pendingRequestsCount,
 }) => {
   return (
     <div className="friends-header">
@@ -36,15 +38,22 @@ const FriendsHeader: React.FC<Props> = ({
                 Recently Added
               </button>
             </div>
-            <button
-              className="requests-btn"
-              onClick={() => {
-                fetchPendingRequests();
-                setView("requests");
-              }}
-            >
-              View Friend Requests
-            </button>
+            <div className="requests-btn-container">
+              <button
+                className="requests-btn"
+                onClick={() => {
+                  fetchPendingRequests();
+                  setView("requests");
+                }}
+              >
+                View Friend Requests
+                {pendingRequestsCount > 0 && (
+                  <span className="notification-badge">
+                    {pendingRequestsCount > 9 ? '9+' : pendingRequestsCount}
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </>
       ) : (
