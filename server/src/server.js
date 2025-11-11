@@ -15,22 +15,42 @@ import feedRoutes from "./backend/routes/FeedRoutes.js";
 const app = express();
 app.use(express.json());
 
-// ✅ CORS configuration
+// CORS configuration
 const allowedOrigins = [
   "http://localhost:5173",                    // local dev
-  "https://chatly-client-sen7.onrender.com"   // deployed client
+  "https://chatly-client-sen7.onrender.com",  // deployed client
+  "https://chatly-0b3p.onrender.com"          // server itself
 ];
 
+// CORS middleware
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
+// Enable CORS for all routes with credentials
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"));
+      callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // ✅ Create HTTP server
