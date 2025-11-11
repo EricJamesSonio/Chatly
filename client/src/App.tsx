@@ -8,7 +8,7 @@ import { AuthProvider } from "./context/AuthContext";
 import { PostProvider } from "./context/PostContext"; // ✅ Import PostProvider
 import AppRoutes from "./routes/AppRoutes";
 
-import "./css/global.css";
+import "./css/Global.css";
 import "./css/Text.css";
 
 const App: React.FC = () => {
