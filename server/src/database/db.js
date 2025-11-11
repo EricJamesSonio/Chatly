@@ -1,5 +1,6 @@
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -7,32 +8,37 @@ import { dirname } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Load .env file
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+// ✅ Load .env from project root
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-// Enable SSL for Aiven or other cloud MySQL providers
-const useSSL =
-  process.env.DB_SSL === 'true' ||
-  process.env.DB_HOST?.includes('aivencloud.com');
+// ✅ Log to verify environment variables are loaded
+console.log('DB_HOST:', process.env.DB_HOST);
+console.log('DB_PORT:', process.env.DB_PORT);
+console.log('DB_USER:', process.env.DB_USER);
+console.log('DB_NAME:', process.env.DB_NAME);
 
+// ✅ SSL options using ca.pem in server/
+const sslOptions = { ca: fs.readFileSync(path.resolve(__dirname, '../../ca.pem')) };
+
+// ✅ Create MySQL pool
 export const db = await mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306,
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASS || '',
-  database: process.env.DB_NAME || 'chatly',
+  host: process.env.DB_HOST,
+  port: Number(process.env.DB_PORT),
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  ssl: useSSL ? { rejectUnauthorized: true } : undefined, // ✅ Required for Aiven
+  ssl: sslOptions,
 });
 
-// Test the connection
+// ✅ Test the connection
 try {
   const conn = await db.getConnection();
   console.log('✅ Connected to MySQL Database');
   conn.release();
 } catch (err) {
-  console.error('❌ Database connection failed:', err.message);
+  console.error('❌ Database connection failed:', err);
   process.exit(1);
 }
