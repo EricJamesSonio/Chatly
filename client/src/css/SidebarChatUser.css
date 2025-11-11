@@ -76,3 +76,91 @@
     font-size: 0.8rem;
   }
 }
+/* ==========================
+   Sidebar Chat User Styles
+   Neutral layout-focused base
+   ========================== */
+
+/* Container */
+.sidebar-chat-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  user-select: none;
+
+  transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+}
+
+/* Hover & Active States */
+.sidebar-chat-user:hover {
+  background: rgba(0, 0, 0, 0.05);
+  transform: translateY(-1px);
+}
+
+.sidebar-chat-user.active {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================
+   Avatar
+   ========================== */
+.user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ==========================
+   User Info
+   ========================== */
+.user-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* Name */
+.user-info h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #111;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Last Message */
+.user-info p {
+  font-size: 0.875rem;
+  margin: 2px 0 0;
+  color: #555;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ==========================
+   Responsive Adjustments
+   ========================== */
+@media (max-width: 600px) {
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .user-info h4 {
+    font-size: 0.95rem;
+  }
+
+  .user-info p {
+    font-size: 0.8rem;
+  }
+}

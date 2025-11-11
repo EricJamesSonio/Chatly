@@ -103,3 +103,97 @@
 .profile-social-container a:hover {
   opacity: 0.7;
 }
+/* ----------------------------- */
+/* RESPONSIVE PROFILE INFO CARD 👤 */
+/* ----------------------------- */
+
+/* Tablets (≤ 1024px) */
+@media (max-width: 1024px) {
+  .profile-info {
+    max-width: 700px;
+    padding: 20px 24px;
+  }
+
+  .profile-info h3 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Mobile devices (≤ 768px) */
+@media (max-width: 768px) {
+  .profile-info {
+    max-width: 100%;
+    margin: 40px auto 15px auto;
+    padding: 18px 20px;
+    border-radius: 8px;
+  }
+
+  .profile-info h3 {
+    font-size: 1.2rem;
+    text-align: center;
+  }
+
+  .profile-info p {
+    font-size: 0.95rem;
+  }
+
+  .profile-info .form-group input,
+  .profile-info .form-group textarea {
+    font-size: 0.95rem;
+    padding: 8px 10px;
+  }
+
+  .profile-info .button-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .profile-info .save-btn,
+  .profile-info .edit-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .profile-social-container {
+    text-align: center;
+  }
+
+  .profile-social-container a {
+    margin-right: 10px;
+    font-size: 1.2rem;
+  }
+}
+
+/* Small phones (≤ 480px) */
+@media (max-width: 480px) {
+  .profile-info {
+    padding: 15px;
+    margin: 30px auto 10px auto;
+  }
+
+  .profile-info h3 {
+    font-size: 1.1rem;
+  }
+
+  .profile-info p {
+    font-size: 0.9rem;
+  }
+
+  .profile-social-container a {
+    font-size: 1.1rem;
+    margin-right: 8px;
+  }
+}
+
+/* Very small screens (≤ 360px) */
+@media (max-width: 360px) {
+  .profile-info {
+    padding: 12px;
+  }
+
+  .profile-info .save-btn,
+  .profile-info .edit-btn {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+}

@@ -468,3 +468,163 @@
   position: relative;
   display: inline-block;
 }
+/* ============================================
+   MOBILE RESPONSIVE STYLES
+   ============================================ */
+
+/* Tablets and smaller laptops */
+@media (max-width: 1024px) {
+  .chat-sidebar {
+    width: 280px;
+  }
+  
+  .chat-sidebar.collapsed {
+    width: 60px;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  .chat-sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 60vh;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    border-radius: 16px 16px 0 0;
+    border-left: none;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding: 16px;
+    transform: translateY(0);
+    transition: transform 0.3s ease;
+  }
+
+  /* When collapsed on mobile, slide down off screen */
+  .chat-sidebar.collapsed {
+    transform: translateY(calc(100% - 60px));
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  /* Toggle button positioning for mobile */
+  .sidebar-toggle {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    left: auto;
+  }
+
+  .chat-sidebar.collapsed .sidebar-toggle {
+    position: absolute;
+    top: 12px;
+    right: 50%;
+    transform: translateX(50%);
+    margin: 0;
+  }
+
+  /* Chat list adjustments */
+  .chat-list {
+    max-height: calc(60vh - 80px);
+    gap: 10px;
+  }
+
+  /* Smaller avatars on mobile */
+  .chat-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .chat-sidebar.collapsed .chat-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Adjust user item padding */
+  .chat-user {
+    padding: 12px 8px;
+    gap: 10px;
+  }
+
+  /* Font size adjustments */
+  .chat-name {
+    font-size: 0.9rem;
+  }
+
+  .chat-last {
+    font-size: 0.75rem;
+  }
+
+  /* Search input */
+  .chat-search input {
+    font-size: 0.85rem;
+    padding: 10px 14px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .chat-sidebar {
+    max-height: 70vh;
+    padding: 12px;
+  }
+
+  /* Even smaller avatars */
+  .chat-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* Compact user items */
+  .chat-user {
+    padding: 10px 6px;
+    gap: 8px;
+  }
+
+  /* Smaller fonts */
+  .chat-name {
+    font-size: 0.85rem;
+  }
+
+  .chat-last {
+    font-size: 0.7rem;
+  }
+
+  /* Smaller unread badge */
+  .unread-badge {
+    min-width: 18px;
+    height: 18px;
+    font-size: 0.65rem;
+    padding: 0 4px;
+  }
+
+  /* Toggle button */
+  .sidebar-toggle {
+    width: 28px;
+    height: 28px;
+    font-size: 14px;
+  }
+}
+
+/* Landscape mode on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .chat-sidebar {
+    max-height: 80vh;
+  }
+
+  .chat-list {
+    max-height: calc(80vh - 80px);
+  }
+}
+
+/* Handle safe areas for notched devices */
+@supports (padding: max(0px)) {
+  @media (max-width: 768px) {
+    .chat-sidebar {
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      padding-left: max(16px, env(safe-area-inset-left));
+      padding-right: max(16px, env(safe-area-inset-right));
+    }
+  }
+}

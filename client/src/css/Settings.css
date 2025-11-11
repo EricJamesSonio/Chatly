@@ -21,3 +21,33 @@
   margin: 0 0 10px;
   font-size: 1rem;
 }
+/* Settings Page Container */
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  min-height: 80vh;
+  padding: 20px;
+  gap: 1rem;
+  text-align: center;
+
+  /* Adjust vertical positioning */
+  transform: translateY(-10vh);
+}
+
+/* Page Title */
+.settings-page h1 {
+  font-size: 2rem;
+  margin: 0;
+  font-weight: 700;
+  color: #111;
+}
+
+/* Description Text */
+.settings-page p {
+  font-size: 1rem;
+  margin: 0 0 10px;
+  color: #555;
+}

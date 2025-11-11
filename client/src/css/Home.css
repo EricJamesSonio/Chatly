@@ -60,3 +60,82 @@ body {
   z-index: -1;
   border-radius: 50%;
 }
+/* ===========================
+   RESPONSIVE DESIGN
+   =========================== */
+
+/* For tablets and smaller (≤ 1024px) */
+@media (max-width: 1024px) {
+  .home-content {
+    padding: 2.5rem 3.5rem;
+    width: 80%;
+  }
+
+  .home-content h1 {
+    font-size: 2rem;
+  }
+
+  .home-content p {
+    font-size: 1.1rem;
+  }
+
+  .home-container::before {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+/* For mobile devices (≤ 768px) */
+@media (max-width: 768px) {
+  .home-container {
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 1.5rem;
+  }
+
+  .home-content {
+    width: 90%;
+    padding: 2rem;
+    border-radius: 15px;
+  }
+
+  .home-content h1 {
+    font-size: 1.8rem;
+  }
+
+  .home-content p {
+    font-size: 1rem;
+  }
+
+  .home-container::before {
+    width: 220px;
+    height: 220px;
+  }
+}
+
+/* For very small devices (≤ 480px) */
+@media (max-width: 480px) {
+  .home-container {
+    padding: 1rem;
+  }
+
+  .home-content {
+    width: 100%;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: none;
+  }
+
+  .home-content h1 {
+    font-size: 1.5rem;
+  }
+
+  .home-content p {
+    font-size: 0.95rem;
+  }
+
+  .home-container::before {
+    width: 160px;
+    height: 160px;
+  }
+}

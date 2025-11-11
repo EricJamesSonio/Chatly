@@ -63,3 +63,98 @@
   color: #666;
   margin: 0;
 }
+/* ===========================
+   RESPONSIVE DESIGN (PROFILE HEADER)
+   =========================== */
+
+/* For tablets and smaller (≤ 1024px) */
+@media (max-width: 1024px) {
+  .profile-header {
+    max-width: 90%;
+  }
+
+  .profile-cover {
+    height: 250px;
+  }
+
+  .profile-avatar {
+    width: 110px;
+    height: 110px;
+    bottom: 15px;
+    left: 20px;
+  }
+
+  .profile-header-info {
+    padding: 20px 20px 20px 150px;
+  }
+
+  .profile-header-info h2 {
+    font-size: 1.6rem;
+  }
+
+  .profile-header-info .profile-location {
+    font-size: 0.95rem;
+  }
+}
+
+/* For mobile devices (≤ 768px) */
+@media (max-width: 768px) {
+  .profile-header {
+    width: 95%;
+    border-radius: 8px;
+  }
+
+  .profile-cover {
+    height: 200px;
+  }
+
+  .profile-avatar {
+    width: 95px;
+    height: 95px;
+    bottom: -40px; /* moves below the cover for mobile */
+    left: 50%;
+    transform: translateX(-50%);
+    border: 3px solid #fff;
+  }
+
+  .profile-header-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 70px 1rem 1.5rem;
+    margin-top: 0;
+  }
+
+  .profile-header-info h2 {
+    font-size: 1.4rem;
+  }
+
+  .profile-header-info .profile-location {
+    font-size: 0.9rem;
+  }
+}
+
+/* For very small phones (≤ 480px) */
+@media (max-width: 480px) {
+  .profile-cover {
+    height: 160px;
+  }
+
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    bottom: -35px;
+  }
+
+  .profile-header-info {
+    padding: 60px 0.8rem 1.2rem;
+  }
+
+  .profile-header-info h2 {
+    font-size: 1.2rem;
+  }
+
+  .profile-header-info .profile-location {
+    font-size: 0.85rem;
+  }
+}

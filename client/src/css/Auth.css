@@ -228,3 +228,97 @@
   height: 14px;
   stroke-width: 2px;
 }
+/* -------------------- */
+/* RESPONSIVE DESIGN 🪶 */
+/* -------------------- */
+
+/* For screens 768px and below (tablets & phones) */
+@media (max-width: 768px) {
+  .auth-container {
+    padding: 1rem;
+  }
+
+  .auth-form {
+    width: 100%;
+    max-width: 320px;
+    padding: 2rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  }
+
+  .auth-form h2 {
+    font-size: 1.5rem;
+  }
+
+  .auth-form input,
+  .auth-form button {
+    font-size: 0.95rem;
+    padding: 0.65rem;
+  }
+
+  .auth-toggle button {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+
+  .auth-message {
+    max-width: 320px;
+    padding: 1.5rem;
+  }
+
+  .logout-confirm {
+    width: 100%;
+    max-width: 280px;
+    padding: 1.2rem;
+  }
+
+  .confirm-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .confirm-buttons button {
+    width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .logout-button {
+    width: 100%;
+    font-size: 0.95rem;
+    padding: 0.7rem;
+  }
+}
+
+/* For very small phones (≤480px) */
+@media (max-width: 480px) {
+  .auth-form {
+    padding: 1.5rem 1rem;
+    max-width: 90%;
+  }
+
+  .auth-form h2 {
+    font-size: 1.3rem;
+  }
+
+  .auth-toggle button {
+    margin: 3px;
+    padding: 7px 12px;
+  }
+
+  .auth-error {
+    font-size: 0.85rem;
+  }
+
+  .auth-message h2 {
+    font-size: 1.2rem;
+  }
+
+  .auth-form input,
+  .auth-form button {
+    font-size: 0.9rem;
+  }
+
+  .edit-btn {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+}

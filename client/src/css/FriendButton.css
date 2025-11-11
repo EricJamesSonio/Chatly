@@ -34,3 +34,296 @@
 .btn-remove:hover {
   background-color: #b01212;
 }
+/* ============================================
+   FRIEND BUTTONS RESPONSIVE STYLES
+   ============================================ */
+
+/* Tablets and smaller laptops */
+@media (max-width: 1024px) {
+  .friend-buttons {
+    margin-top: 10px;
+  }
+
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    padding: 8px 14px;
+    font-size: 0.875rem;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  .friend-buttons {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    /* Better touch targets */
+    min-height: 40px;
+    min-width: 100px;
+    flex: 1;
+  }
+
+  /* Active state for touch feedback */
+  .btn-add:active {
+    background-color: #0d5bb8;
+    transform: scale(0.98);
+  }
+
+  .btn-remove:active {
+    background-color: #8a0e0e;
+    transform: scale(0.98);
+  }
+
+  .btn-pending:active {
+    transform: none;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .friend-buttons {
+    margin-top: 10px;
+  }
+
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    min-height: 38px;
+    min-width: 90px;
+    width: 100%; /* Full width on very small screens */
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+  .friend-buttons {
+    margin-top: 8px;
+  }
+
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    padding: 9px 12px;
+    font-size: 0.8rem;
+    min-height: 36px;
+    min-width: 80px;
+  }
+}
+
+/* Touch device optimization */
+@media (hover: none) and (pointer: coarse) {
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    /* Larger touch targets */
+    min-height: 44px;
+    padding: 12px 18px;
+    font-weight: 500;
+  }
+
+  /* Enhanced touch feedback */
+  .btn-add:active {
+    background-color: #0d5bb8;
+    transform: scale(0.96);
+    transition: all 0.1s ease;
+  }
+
+  .btn-remove:active {
+    background-color: #8a0e0e;
+    transform: scale(0.96);
+    transition: all 0.1s ease;
+  }
+
+  /* Disable hover effects on touch devices */
+  .btn-add:hover {
+    background-color: #1b74e4;
+  }
+
+  .btn-remove:hover {
+    background-color: #e41b1b;
+  }
+}
+
+/* Landscape orientation on mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  .friend-buttons {
+    margin-top: 8px;
+  }
+
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    padding: 8px 14px;
+    min-height: 36px;
+    font-size: 0.85rem;
+  }
+}
+
+/* Multiple buttons in a row - responsive layout */
+.friend-buttons > * + * {
+  margin-left: 0;
+}
+
+@media (min-width: 769px) {
+  .friend-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    flex: 0 1 auto;
+  }
+}
+
+/* Button disabled state improvements for mobile */
+@media (max-width: 768px) {
+  .btn-pending {
+    opacity: 0.7;
+    min-height: 40px;
+  }
+
+  .btn-add:disabled,
+  .btn-remove:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Loading state (if you add a loading class) */
+.btn-add.loading,
+.btn-remove.loading {
+  opacity: 0.7;
+  cursor: wait;
+  pointer-events: none;
+}
+
+@media (max-width: 768px) {
+  .btn-add.loading,
+  .btn-remove.loading {
+    opacity: 0.6;
+  }
+}
+
+/* Focus states for accessibility */
+.btn-add:focus-visible,
+.btn-remove:focus-visible,
+.btn-pending:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .btn-add:focus-visible {
+    outline-color: #1b74e4;
+    box-shadow: 0 0 0 3px rgba(27, 116, 228, 0.3);
+  }
+
+  .btn-remove:focus-visible {
+    outline-color: #e41b1b;
+    box-shadow: 0 0 0 3px rgba(228, 27, 27, 0.3);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .btn-add {
+    background-color: #2b7de9;
+  }
+
+  .btn-add:hover {
+    background-color: #1b6cd6;
+  }
+
+  .btn-remove {
+    background-color: #f52727;
+  }
+
+  .btn-remove:hover {
+    background-color: #d81e1e;
+  }
+
+  .btn-pending {
+    background-color: #6b6b6b;
+    color: #e0e0e0;
+  }
+
+  @media (max-width: 768px) {
+    .btn-add:active {
+      background-color: #1562c2;
+    }
+
+    .btn-remove:active {
+      background-color: #b81a1a;
+    }
+  }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    transition: none;
+  }
+
+  .btn-add:active,
+  .btn-remove:active {
+    transform: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .btn-add,
+  .btn-remove,
+  .btn-pending {
+    border: 2px solid currentColor;
+    font-weight: 600;
+  }
+
+  .btn-add:focus-visible,
+  .btn-remove:focus-visible,
+  .btn-pending:focus-visible {
+    outline-width: 3px;
+  }
+}
+
+/* Button group variant (if buttons are side by side) */
+@media (max-width: 480px) {
+  .friend-buttons.button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .friend-buttons.button-group .btn-add,
+  .friend-buttons.button-group .btn-remove,
+  .friend-buttons.button-group .btn-pending {
+    width: 100%;
+  }
+}
+
+/* Single button centering on very small screens */
+@media (max-width: 360px) {
+  .friend-buttons:has(:only-child) {
+    display: flex;
+    justify-content: center;
+  }
+}

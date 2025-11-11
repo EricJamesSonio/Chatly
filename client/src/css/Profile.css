@@ -5,3 +5,38 @@
   padding: 2rem;
   min-height: 100vh;
 }
+/* ----------------------------- */
+/* RESPONSIVE PROFILE PAGE 👤 */
+/* ----------------------------- */
+
+/* Tablets and small laptops (≤ 1024px) */
+@media (max-width: 1024px) {
+  .profile-page {
+    padding: 1.5rem;
+    align-items: center;
+  }
+}
+
+/* Mobile devices (≤ 768px) */
+@media (max-width: 768px) {
+  .profile-page {
+    padding: 1.2rem 1rem;
+    align-items: stretch; /* allow content to take full width */
+    min-height: calc(100vh - 60px); /* account for navbar */
+  }
+}
+
+/* Small phones (≤ 480px) */
+@media (max-width: 480px) {
+  .profile-page {
+    padding: 1rem;
+    align-items: stretch;
+  }
+}
+
+/* Very small devices (≤ 360px) */
+@media (max-width: 360px) {
+  .profile-page {
+    padding: 0.75rem;
+  }
+}

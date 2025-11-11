@@ -11,3 +11,52 @@
   cursor: pointer;
   font-size: 0.9rem;
 }
+/* ----------------------------- */
+/* RESPONSIVE THEME SWITCHER 🎨 */
+/* ----------------------------- */
+
+/* Tablets (≤ 1024px) */
+@media (max-width: 1024px) {
+  .theme-switcher {
+    margin-top: 0.8rem;
+  }
+
+  .theme-switcher select {
+    font-size: 0.9rem;
+    padding: 0.45rem 0.9rem;
+  }
+}
+
+/* Mobile devices (≤ 768px) */
+@media (max-width: 768px) {
+  .theme-switcher {
+    margin-top: 0.75rem;
+    display: flex;
+    justify-content: center; /* center dropdown on mobile */
+  }
+
+  .theme-switcher select {
+    width: 100%;
+    max-width: 250px;
+    font-size: 0.95rem;
+    padding: 0.6rem 1rem;
+  }
+}
+
+/* Small phones (≤ 480px) */
+@media (max-width: 480px) {
+  .theme-switcher select {
+    max-width: 220px;
+    font-size: 0.9rem;
+    padding: 0.55rem 0.9rem;
+  }
+}
+
+/* Very small screens (≤ 360px) */
+@media (max-width: 360px) {
+  .theme-switcher select {
+    max-width: 200px;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
+  }
+}

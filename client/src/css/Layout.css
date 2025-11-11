@@ -29,3 +29,92 @@
 .layout-body {
   display: block;
 }
+/* ----------------------------------- */
+/* RESPONSIVE LAYOUT CONTENT 📱        */
+/* ----------------------------------- */
+
+/* Tablets and small laptops (≤ 1024px) */
+@media (max-width: 1024px) {
+  .layout-content {
+    padding-top: 70px; /* slightly smaller navbar */
+    padding-right: 0;
+  }
+
+  .layout-content.with-sidebar {
+    padding-right: 0; /* remove desktop sidebar padding */
+  }
+
+  .layout-content.with-sidebar.sidebar-expanded,
+  .layout-content.with-sidebar.sidebar-collapsed {
+    padding-right: 0;
+  }
+}
+
+/* Mobile devices (≤ 768px) */
+@media (max-width: 768px) {
+  .layout-content {
+    padding-top: 60px; /* smaller navbar for mobile */
+    min-height: calc(100vh - 60px);
+    padding-right: 0;
+  }
+
+  .layout-content.with-sidebar {
+    padding-right: 0;
+  }
+
+  .layout-sidebar {
+    display: block;
+    position: fixed;
+    top: 60px; /* below navbar */
+    right: 0;
+    width: 260px;
+    height: calc(100vh - 60px);
+    background-color: #fff;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 900;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+  }
+
+  /* Sidebar open state (add .sidebar-open dynamically) */
+  .layout-sidebar.sidebar-open {
+    transform: translateX(0);
+  }
+
+  .layout-body {
+    display: block;
+    padding: 1rem;
+  }
+}
+
+/* Small phones (≤ 480px) */
+@media (max-width: 480px) {
+  .layout-content {
+    padding-top: 55px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .layout-sidebar {
+    width: 80%;
+  }
+
+  .layout-body {
+    padding: 0.75rem;
+  }
+}
+
+/* Very small devices (≤ 360px) */
+@media (max-width: 360px) {
+  .layout-content {
+    padding-top: 50px;
+  }
+
+  .layout-sidebar {
+    width: 100%; /* full-screen overlay */
+  }
+
+  .layout-body {
+    padding: 0.5rem;
+  }
+}

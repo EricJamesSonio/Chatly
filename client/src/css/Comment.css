@@ -38,3 +38,167 @@
 .comment-delete:hover {
   background: #f5f5f5;
 }
+/* ============================================
+   COMMENT RESPONSIVE STYLES
+   ============================================ */
+
+/* Tablets and smaller laptops */
+@media (max-width: 1024px) {
+  .comment {
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+
+  .comment-user {
+    font-size: 0.9rem;
+  }
+
+  .comment-content {
+    font-size: 0.875rem;
+  }
+}
+
+/* Mobile devices */
+@media (max-width: 768px) {
+  .comment {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+  }
+
+  .comment-header {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .comment-user {
+    font-size: 0.875rem;
+  }
+
+  .comment-content {
+    font-size: 0.875rem;
+    line-height: 1.6;
+    margin: 6px 0 10px;
+  }
+
+  .comment-delete {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+    margin-top: 4px;
+    /* Make delete button more touch-friendly */
+    min-height: 32px;
+    min-width: 60px;
+  }
+
+  .comment-delete:hover {
+    background: #f0f0f0;
+  }
+
+  .comment-delete:active {
+    background: #e5e5e5;
+    transform: scale(0.98);
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .comment {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+
+  .comment-header {
+    margin-bottom: 5px;
+  }
+
+  .comment-user {
+    font-size: 0.85rem;
+  }
+
+  .comment-content {
+    font-size: 0.85rem;
+    line-height: 1.55;
+    margin: 5px 0 8px;
+  }
+
+  .comment-delete {
+    font-size: 0.75rem;
+    padding: 5px 8px;
+    min-height: 30px;
+    min-width: 55px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+  .comment {
+    padding: 8px;
+    margin-bottom: 8px;
+  }
+
+  .comment-user {
+    font-size: 0.8rem;
+  }
+
+  .comment-content {
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+
+  .comment-delete {
+    font-size: 0.7rem;
+    padding: 4px 6px;
+  }
+}
+
+/* Touch device optimization */
+@media (hover: none) and (pointer: coarse) {
+  .comment-delete {
+    /* Larger touch target */
+    min-height: 36px;
+    min-width: 64px;
+    padding: 8px 12px;
+  }
+
+  .comment-delete:active {
+    background: #e8e8e8;
+    transform: scale(0.95);
+    transition: all 0.1s ease;
+  }
+}
+
+/* High DPI screens (Retina displays) */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .comment {
+    border-width: 0.5px;
+  }
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .comment {
+    border-color: #3a3a3a;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+  }
+
+  .comment-delete:hover {
+    background: #2a2a2a;
+  }
+
+  .comment-delete:active {
+    background: #333333;
+  }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .comment-delete {
+    transition: none;
+  }
+
+  .comment-delete:active {
+    transform: none;
+  }
+}

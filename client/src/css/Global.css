@@ -78,3 +78,78 @@ body[data-theme="colorblind"] .profile-card {
   background: #fff;
   border: 2px solid #000;
 }
+/* ========================
+   RESPONSIVE DESIGN
+   ======================== */
+
+/* For tablets and smaller (≤ 1024px) */
+@media (max-width: 1024px) {
+  nav {
+    padding: 10px 15px;
+    text-align: center;
+  }
+
+  .profile-card,
+  .chat-window,
+  .friends-list {
+    width: 90%;
+    margin: 10px auto;
+  }
+}
+
+/* For mobile devices (≤ 768px) */
+@media (max-width: 768px) {
+  body {
+    font-size: 15px;
+  }
+
+  nav {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px;
+  }
+
+  .profile-card,
+  .chat-window,
+  .friends-list {
+    width: 95%;
+    margin: 8px auto;
+  }
+
+  .profile-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+  }
+}
+
+/* For very small devices (≤ 480px) */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+    padding: 5px;
+  }
+
+  nav {
+    font-size: 14px;
+    flex-direction: column;
+  }
+
+  .profile-card,
+  .chat-window,
+  .friends-list {
+    width: 100%;
+    margin: 5px 0;
+    box-shadow: none;
+  }
+
+  .chat-window {
+    height: auto;
+  }
+
+  button, input, select {
+    width: 100%;
+    font-size: 14px;
+  }
+}
