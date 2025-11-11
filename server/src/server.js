@@ -18,26 +18,8 @@ app.use(express.json());
 // CORS configuration
 const allowedOrigins = [
   "http://localhost:5173",                    // local dev
-  "https://chatly-client-sen7.onrender.com",  // deployed client
-  "https://chatly-0b3p.onrender.com"          // server itself
+  "https://chatly-client-sen7.onrender.com"   // deployed client
 ];
-
-// CORS middleware
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (allowedOrigins.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  next();
-});
 
 // Enable CORS for all routes with credentials
 app.use(cors({
@@ -50,7 +32,9 @@ app.use(cors({
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+  maxAge: 86400 // 24 hours
 }));
 
 // ✅ Create HTTP server
