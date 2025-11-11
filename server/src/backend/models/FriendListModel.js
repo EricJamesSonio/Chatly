@@ -5,11 +5,16 @@ export default class FriendlistModel {
 
   // Create a new friend request
   async create(user_id, friend_id) {
-    const [result] = await this.db.execute(
-      'INSERT INTO friendlist (user_id, friend_id, status) VALUES (?, ?, "pending")',
-      [user_id, friend_id]
-    );
-    return result.insertId;
+    try {
+      const [result] = await this.db.execute(
+        'INSERT INTO friendlist (user_id, friend_id, status) VALUES (?, ?, "pending")',
+        [user_id, friend_id]
+      );
+      return result.insertId;
+    } catch (error) {
+      console.error('Error in create friend request:', error);
+      throw new Error('Failed to create friend request');
+    }
   }
 
   // ✅ Get all friends of a user (accepted only, no duplicates)
@@ -85,7 +90,7 @@ export default class FriendlistModel {
     return true;
   }
 
-  // ✅ Check if friendship already exists (in either direction)
+  // Check if friendship already exists (in either direction)
   async checkExisting(user_id, friend_id) {
     try {
       const [rows] = await this.db.execute(
@@ -98,8 +103,13 @@ export default class FriendlistModel {
       );
       return rows && rows.length > 0 ? rows[0] : null;
     } catch (error) {
-      console.error('Error in checkExisting:', error);
-      throw error; // Re-throw the error to be handled by the controller
+      console.error('Error checking existing friendship:', {
+        error: error.message,
+        user_id,
+        friend_id,
+        stack: error.stack
+      });
+      throw new Error('Failed to check existing friendship');
     }
   }
 
