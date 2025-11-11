@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../../css/FriendButton.css";
-import { useFriends } from "../../context/FriendsContext"; // ✅ import hook
-const API_URL = import.meta.env.VITE_API_URL;
+import { useFriends } from "../../context/FriendsContext";
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface FriendButtonsProps {
   currentUserId: number;
