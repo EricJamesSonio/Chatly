@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "initdb": "node src/database/init.js",
-    "start": "node src/server.js"
+    "start":  "node src/database/init.js && node src/server.js"
   },
   "keywords": [],
   "author": "",
