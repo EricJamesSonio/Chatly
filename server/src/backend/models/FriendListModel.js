@@ -87,15 +87,20 @@ export default class FriendlistModel {
 
   // ✅ Check if friendship already exists (in either direction)
   async checkExisting(user_id, friend_id) {
-    const [rows] = await this.db.execute(
-      `
-      SELECT * FROM friendlist 
-      WHERE (user_id = ? AND friend_id = ?) 
-         OR (user_id = ? AND friend_id = ?)
-      `,
-      [user_id, friend_id, friend_id, user_id]
-    );
-    return rows.length > 0 ? rows[0] : null;
+    try {
+      const [rows] = await this.db.execute(
+        `
+        SELECT * FROM friendlist 
+        WHERE (user_id = ? AND friend_id = ?) 
+           OR (user_id = ? AND friend_id = ?)
+        `,
+        [user_id, friend_id, friend_id, user_id]
+      );
+      return rows && rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+      console.error('Error in checkExisting:', error);
+      throw error; // Re-throw the error to be handled by the controller
+    }
   }
 
 async getNonFriends(user_id) {
