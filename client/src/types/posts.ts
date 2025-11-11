@@ -1,4 +1,4 @@
-export interface MediaItem {
+export interface Media {
   url: string;
   type: string;
 }
@@ -8,25 +8,17 @@ export interface CommentType {
   user_id: number;
   user_name: string;
   content: string;
-  created_at: string;
-  // Add camelCase aliases for consistency in the frontend
-  userId?: number;
-  userName?: string;
-  createdAt?: string;
+  created_at?: string;
 }
 
 export interface PostProps {
   id: number;
-  user_id: number;
-  user_name: string;
+  userId: number;
+  userName: string;
   content: string;
-  media?: MediaItem[];
+  media: Media[];
   likes: number[];
   comments: CommentType[];
-  created_at: string;
-  refreshFeed?: () => void;
-  // Add camelCase aliases for consistency in the frontend
-  userId?: number;
-  userName?: string;
   createdAt?: string;
+  refreshFeed?: () => void;
 }

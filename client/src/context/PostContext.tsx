@@ -64,7 +64,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const createPost = async (content: string, media: Media[]) => {
     if (!user?.id) return;
     try {
-      await axios.post("http://localhost:5000/api/posts", { user_id: user.id, content, media });
+      await axios.post("${API_URL}/api/posts", { user_id: user.id, content, media });
       refreshPosts();
     } catch (err: any) {
       console.error("❌ Failed to create post", err);

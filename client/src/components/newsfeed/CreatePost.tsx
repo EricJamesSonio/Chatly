@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import MediaUploader from "./MediaUploader"; // handles media selection
 import "../../css/CreatePost.css";
-
+const API_URL = import.meta.env.VITE_API_URL;
 interface CreatePostProps {
   refreshFeed?: () => void;
 }
@@ -21,7 +21,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
     if (!content.trim()) return;
 
     try {
-      await axios.post("http://localhost:5000/api/posts", {
+      await axios.post("${API_URL}/api/posts", {
         user_id: 1, // replace with AuthContext user.id
         content,
         media,

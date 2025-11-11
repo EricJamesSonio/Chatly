@@ -2,10 +2,23 @@ import React, { createContext, useState, useContext, useEffect } from "react";
 import type { ReactNode } from "react";
 import { io, Socket } from "socket.io-client";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 interface User {
-  id: number;
+  id: string;
+  name: string;
   username: string;
+  profile_image: string;
+  location?: string;
+  bio?: string;
+  birthdate?: string;
+  hobbies?: string;
+  talents?: string;
+  facebook_url?: string;
+  tiktok_url?: string;
+  instagram_url?: string;
+  created_at: string;
+  last_active: string;
 }
 
 interface AuthContextType {
@@ -19,7 +32,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Create a single socket instance
-const socket = io("http://localhost:5000");
+let socket: Socket | null = null;
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -27,11 +40,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const savedUser = localStorage.getItem("chatly_user");
     if (savedUser) setUser(JSON.parse(savedUser));
+
+    // Initialize socket only once
+    if (!socket) {
+      socket = io(API_URL);
+    }
   }, []);
 
   const login = async (username: string, password: string) => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -40,6 +58,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (res.ok) {
         setUser(data.user);
         localStorage.setItem("chatly_user", JSON.stringify(data.user));
+
+        // Join private room
+        socket?.emit("join", data.user.id);
         return true;
       }
       return false;
@@ -51,7 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const signup = async (username: string, password: string) => {
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
+      const res = await fetch(`${API_URL}/api/auth/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -60,6 +81,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (res.ok) {
         setUser(data.user);
         localStorage.setItem("chatly_user", JSON.stringify(data.user));
+
+        // Join private room
+        socket?.emit("join", data.user.id);
         return true;
       }
       return false;
@@ -71,21 +95,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const logout = () => {
     // Emit logout event to server
-    socket.emit('logout');
-    
+    socket?.emit("logout");
+
     // Clear user data
     setUser(null);
     localStorage.removeItem("chatly_user");
-    
-    // Clear any friends list data from local storage if exists
-    localStorage.removeItem('friends_list');
-    
+    localStorage.removeItem("friends_list");
+
     // Emit a custom event to notify other components to clear their state
-    window.dispatchEvent(new Event('user_logged_out'));
-    
-    // Disconnect socket if needed
-    if (socket.connected) {
+    window.dispatchEvent(new Event("user_logged_out"));
+
+    // Disconnect socket if connected
+    if (socket?.connected) {
       socket.disconnect();
+      socket = null; // reset socket for next login
     }
   };
 
