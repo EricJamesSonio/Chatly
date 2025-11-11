@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Post from "./Post";
-import type { PostProps, CommentType } from "./Post"; // ✅ type-only import
+import type { PostProps, CommentType } from "../../types/posts"; // ✅ shared type
 import CreatePost from "./CreatePost";
 
 const API_URL = import.meta.env.VITE_API_URL;

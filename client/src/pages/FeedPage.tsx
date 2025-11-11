@@ -2,13 +2,35 @@ import React from "react";
 import { usePosts } from "../context/PostContext";
 import CreatePost from "../components/newsfeed/CreatePost";
 import Post from "../components/newsfeed/Post";
+import type { PostProps, CommentType } from "../types/posts"; // shared type
 import "../css/FeedPage.css";
+
+// Make a type for posts without the refreshFeed prop
+type PostWithoutRefresh = Omit<PostProps, "refreshFeed">;
 
 const FeedPage: React.FC = () => {
   const { posts, loading, error, refreshPosts } = usePosts();
 
-  // Safety check: make sure posts is always an array
-  const safePosts = Array.isArray(posts) ? posts : [];
+  // Ensure posts array is correctly typed
+  const safePosts: PostWithoutRefresh[] =
+    Array.isArray(posts) && posts.length > 0
+      ? posts.map((p: any) => ({
+          id: p.id,
+          userId: p.userId ?? p.user_id,
+          userName: p.userName ?? p.user_name,
+          content: p.content,
+          media: p.media ?? [],
+          likes: p.likes ?? [],
+          comments: (p.comments ?? []).map((c: any): CommentType => ({
+            id: c.id,
+            user_id: c.user_id,
+            user_name: c.user_name,
+            content: c.content,
+            created_at: c.created_at,
+          })),
+          createdAt: p.createdAt ?? p.created_at,
+        }))
+      : [];
 
   if (loading) return <p>Loading posts...</p>;
   if (error) return <p>{error}</p>;

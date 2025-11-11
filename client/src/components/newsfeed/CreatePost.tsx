@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import type { PostProps } from "./Post"; // ✅ type-only import for consistency
+import type { PostProps } from "../../types/posts"; // ✅ type-only import for consistency
 import MediaUploader from "./MediaUploader";
 import "../../css/CreatePost.css";
 
