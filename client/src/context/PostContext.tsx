@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
-
+const API_URL = import.meta.env.VITE_API_URL;
 interface Media {
   url: string;
   type: string;
@@ -48,7 +48,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!user?.id) return;
     setLoading(true);
     try {
-      const res = await axios.get(`http://localhost:5000/api/feed?userId=${user.id}`);
+      const res = await axios.get(`${API_URL}/api/feed?userId=${user.id}`);
 
       setPosts(res.data);
       setError(null);
@@ -73,7 +73,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const likePost = async (postId: number) => {
     if (!user?.id) return;
     try {
-      await axios.post(`http://localhost:5000/api/posts/${postId}/like`, { userId: user.id });
+      await axios.post(`${API_URL}/api/posts/${postId}/like`, { userId: user.id });
       refreshPosts();
     } catch (err: any) {
       console.error("❌ Failed to like post", err);
@@ -83,7 +83,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const unlikePost = async (postId: number) => {
     if (!user?.id) return;
     try {
-      await axios.post(`http://localhost:5000/api/posts/${postId}/unlike`, { userId: user.id });
+      await axios.post(`${API_URL}/api/posts/${postId}/unlike`, { userId: user.id });
       refreshPosts();
     } catch (err: any) {
       console.error("❌ Failed to unlike post", err);
@@ -93,7 +93,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addComment = async (postId: number, content: string) => {
     if (!user?.id) return;
     try {
-      await axios.post(`http://localhost:5000/api/posts/${postId}/comment`, { user_id: user.id, content });
+      await axios.post(`${API_URL}/api/posts/${postId}/comment`, { user_id: user.id, content });
       refreshPosts();
     } catch (err: any) {
       console.error("❌ Failed to add comment", err);
@@ -102,7 +102,7 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const deleteComment = async (postId: number, commentId: number) => {
     try {
-      await axios.delete(`http://localhost:5000/api/posts/${postId}/comment/${commentId}`);
+      await axios.delete(`${API_URL}/api/posts/${postId}/comment/${commentId}`);
       refreshPosts();
     } catch (err: any) {
       console.error("❌ Failed to delete comment", err);

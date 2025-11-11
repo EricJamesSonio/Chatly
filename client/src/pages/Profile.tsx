@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout";
 import ProfileCard from "../components/ProfileCard";
 import ProfileInfo, { type User } from "../components/ProfileInfo"; // ✅ type-only import
 import "../css/Profile.css";
-
+const API_URL = import.meta.env.VITE_API_URL;
 interface UserWithUsername extends User {
   username?: string; // include username from account
 }
@@ -28,12 +28,12 @@ const Profile: React.FC = () => {
     const fetchUser = async () => {
       try {
         // Fetch account to get user_id
-        const accRes = await fetch(`http://localhost:5000/api/accounts/${accountId}`);
+        const accRes = await fetch(`${API_URL}/api/accounts/${accountId}`);
         if (!accRes.ok) throw new Error("Failed to fetch account data");
         const accountData = await accRes.json();
 
         // Fetch user profile
-        const userRes = await fetch(`http://localhost:5000/api/users/${accountData.user_id}`);
+        const userRes = await fetch(`${API_URL}/api/users/${accountData.user_id}`);
         if (!userRes.ok) throw new Error("Failed to fetch user profile");
         const userData = await userRes.json();
 
@@ -58,7 +58,7 @@ const Profile: React.FC = () => {
     if (!user) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/users/${user.id}`, {
+      const res = await fetch(`${API_URL}/api/users/${user.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedUser),

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext"; // 👈 import your auth context
-
+const API_URL = import.meta.env.VITE_API_URL;
 interface Media {
   url: string;
   type: string;
@@ -49,7 +49,7 @@ const Post: React.FC<PostProps> = ({
     if (!newComment.trim() || !user) return;
 
     try {
-      const res = await axios.post(`http://localhost:5000/api/posts/${id}/comment`, {
+      const res = await axios.post(`${API_URL}/api/posts/${id}/comment`, {
         user_id: user.id,
         content: newComment,
       });
@@ -73,7 +73,7 @@ const Post: React.FC<PostProps> = ({
     if (!user) return;
 
     try {
-      await axios.post(`http://localhost:5000/api/posts/${id}/like`, {
+      await axios.post(`${API_URL}/api/posts/${id}/like`, {
         userId: user.id,
       });
       refreshFeed?.();

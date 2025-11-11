@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext";
-
+const API_URL = import.meta.env.VITE_API_URL;
 interface User {
   id: string;
   name: string;
@@ -65,7 +65,7 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const refreshFriends = async () => {
     if (!user?.id) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/friends/${user.id}`);
+      const res = await fetch(`${API_URL}/api/friends/${user.id}`);
       if (!res.ok) throw new Error("Failed to fetch friends");
       const data = await res.json();
       setFriends(data);
@@ -79,7 +79,7 @@ export const FriendsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const refreshNonFriends = async () => {
     if (!user?.id) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/friends/not-friends/${user.id}`);
+      const res = await fetch(`${API_URL}/api/friends/not-friends/${user.id}`);
       if (!res.ok) throw new Error("Failed to fetch non-friends");
       const data = await res.json();
       setNonFriends(data);

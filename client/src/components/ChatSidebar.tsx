@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../css/ChatSidebar.css";
 import { useMessages } from "../context/MessagesContext";
+const API_URL = import.meta.env.VITE_API_URL;
+
 
 interface Message {
   id: number;
@@ -37,7 +39,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const fetchLastMessage = async (userId: number) => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/messages/${currentUser.id}/${userId}`
+        `${API_URL}/api/messages/${currentUser.id}/${userId}`
       );
       const data: Message[] = await res.json();
       if (data.length) {
@@ -60,7 +62,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
   const fetchUnreadCounts = async () => {
     if (!currentUser?.id) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/messages/unread/${currentUser.id}`);
+      const res = await fetch(`${API_URL}/api/messages/unread/${currentUser.id}`);
       const serverCounts: Record<number, number> = await res.json();
       
       // Merge with existing counts to prevent losing unread state on refresh
@@ -122,7 +124,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 
     // Mark messages as read on the backend
     try {
-      await fetch(`http://localhost:5000/api/messages/read/${currentUser.id}/${userId}`, {
+      await fetch(`${API_URL}/api/messages/read/${currentUser.id}/${userId}`, {
         method: "POST",
       });
     } catch (err) {

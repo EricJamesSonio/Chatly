@@ -1,5 +1,5 @@
 import React from "react";
-
+const API_URL = import.meta.env.VITE_API_URL;
 interface Props {
   requests: any[];
   fetchPendingRequests: () => void;
@@ -9,8 +9,8 @@ const FriendRequests: React.FC<Props> = ({ requests, fetchPendingRequests }) => 
   const handleAction = async (id: number, action: "accept" | "reject") => {
     const url =
       action === "accept"
-        ? `http://localhost:5000/api/friends/accept/${id}`
-        : `http://localhost:5000/api/friends/${id}`;
+        ? `${API_URL}/api/friends/accept/${id}`
+        : `${API_URL}/api/friends/${id}`;
     const method = action === "accept" ? "PUT" : "DELETE";
     await fetch(url, { method });
     fetchPendingRequests();

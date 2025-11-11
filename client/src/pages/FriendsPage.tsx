@@ -5,7 +5,7 @@ import FriendsHeader from "../components/friends/FriendsHeader";
 import FriendsList from "../components/friends/FriendsList";
 import FriendRequests from "../components/friends/FriendRequests";
 import "../css/FriendsPage.css";
-
+const API_URL = import.meta.env.VITE_API_URL;
 const FriendsPage: React.FC = () => {
   const {
     friends,
@@ -25,7 +25,7 @@ const FriendsPage: React.FC = () => {
 
   const fetchPendingRequests = async () => {
     if (!currentUser?.id) return;
-    const res = await fetch(`http://localhost:5000/api/friends/pending/${currentUser.id}`);
+    const res = await fetch(`${API_URL}/api/friends/pending/${currentUser.id}`);
     if (res.ok) {
       const requests = await res.json();
       setPendingRequests(requests);

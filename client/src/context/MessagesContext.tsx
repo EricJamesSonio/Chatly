@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "./AuthContext";
-
+const API_URL = import.meta.env.VITE_API_URL;
 interface Message {
   id: number;
   sender_id: number;
@@ -43,7 +43,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const fetchChatUsers = async () => {
     if (!user?.id) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/friends/${user.id}`);
+      const res = await fetch(`${API_URL}/api/friends/${user.id}`);
       const data = await res.json();
       setChatUsers(data);
     } catch (err) {
@@ -55,7 +55,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const refreshMessages = async (userId: number) => {
     if (!user?.id) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/messages/${user.id}/${userId}`);
+      const res = await fetch(`${API_URL}/api/messages/${user.id}/${userId}`);
       const data: Message[] = await res.json();
       setMessages((prev) => ({ ...prev, [userId]: data }));
     } catch (err) {
@@ -67,7 +67,7 @@ export const MessagesProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const sendMessage = async (receiverId: number, messageText: string) => {
     if (!user?.id) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/messages`, {
+      const res = await fetch(`${API_URL}/api/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
