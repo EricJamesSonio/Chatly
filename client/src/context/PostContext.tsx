@@ -16,6 +16,7 @@ interface CommentType {
 export interface PostType {
   id: number;
   userId: number;
+  userName: string;
   content: string;
   media: Media[];
   likes: number[];

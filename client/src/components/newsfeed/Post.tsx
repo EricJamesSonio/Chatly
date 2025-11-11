@@ -7,7 +7,7 @@ interface Media {
   type: string;
 }
 
-interface CommentType {
+export interface CommentType {
   id: number;
   user_id: number;
   user_name: string;
@@ -15,7 +15,7 @@ interface CommentType {
   created_at?: string;
 }
 
-interface PostProps {
+export interface PostProps {
   id: number;
   userId: number;
   userName: string;
