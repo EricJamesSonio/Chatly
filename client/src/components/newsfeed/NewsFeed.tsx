@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Post from "./Post";
-import type { PostProps, CommentType } from "./Post";
-
+import type { PostProps, CommentType } from "./Post"; // ✅ type-only import
 import CreatePost from "./CreatePost";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface Media {
-  url: string;
-  type: string;
-}
-
 // PostType matches PostProps minus refreshFeed
-interface PostType extends Omit<PostProps, "refreshFeed"> {
-  media: Media[];
-  comments: CommentType[];
-}
+type PostType = Omit<PostProps, "refreshFeed">;
 
 const NewsFeed: React.FC = () => {
   const [posts, setPosts] = useState<PostType[]>([]);
@@ -32,13 +23,14 @@ const NewsFeed: React.FC = () => {
         content: p.content,
         media: p.media || [],
         likes: p.likes || [],
-        comments: (p.comments || []).map((c: any) => ({
+        comments: (p.comments || []).map((c: any): CommentType => ({
           id: c.id,
           user_id: c.user_id,
           user_name: c.user_name,
           content: c.content,
           created_at: c.created_at,
         })),
+        createdAt: p.created_at,
       }));
 
       setPosts(postsWithUserName);

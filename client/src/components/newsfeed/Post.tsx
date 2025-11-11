@@ -1,21 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useAuth } from "../../context/AuthContext"; // 👈 import your auth context
+import { useAuth } from "../../context/AuthContext"; // ✅ AuthContext
 const API_URL = import.meta.env.VITE_API_URL;
+
 interface Media {
   url: string;
   type: string;
 }
 
-export interface CommentType {
+// ✅ Export types for use in NewsFeed or elsewhere
+export type CommentType = {
   id: number;
   user_id: number;
   user_name: string;
   content: string;
   created_at?: string;
-}
+};
 
-export interface PostProps {
+export type PostProps = {
   id: number;
   userId: number;
   userName: string;
@@ -25,7 +27,7 @@ export interface PostProps {
   comments: CommentType[];
   createdAt?: string;
   refreshFeed?: () => void;
-}
+};
 
 const Post: React.FC<PostProps> = ({
   id,
@@ -41,10 +43,8 @@ const Post: React.FC<PostProps> = ({
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<CommentType[]>(initialComments);
 
-  // ✅ Get logged-in user from AuthContext
-  const { user } = useAuth(); // should contain user.id, user.name, etc.
+  const { user } = useAuth(); // Logged-in user
 
-  // ✅ Add comment with instant UI update
   const handleAddComment = async () => {
     if (!newComment.trim() || !user) return;
 
@@ -55,7 +55,7 @@ const Post: React.FC<PostProps> = ({
       });
 
       if (res.data.comment) {
-        const commentWithName = {
+        const commentWithName: CommentType = {
           ...res.data.comment,
           user_name: user.username,
         };
@@ -68,14 +68,11 @@ const Post: React.FC<PostProps> = ({
     }
   };
 
-  // ✅ Like post
   const handleLike = async () => {
     if (!user) return;
 
     try {
-      await axios.post(`${API_URL}/api/posts/${id}/like`, {
-        userId: user.id,
-      });
+      await axios.post(`${API_URL}/api/posts/${id}/like`, { userId: user.id });
       refreshFeed?.();
     } catch (err) {
       console.error("❌ likePost error:", err);
@@ -94,57 +91,26 @@ const Post: React.FC<PostProps> = ({
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        padding: "12px",
-        marginBottom: "16px",
-        borderRadius: "8px",
-        background: "#fff",
-      }}
-    >
+    <div style={{ border: "1px solid #ddd", padding: "12px", marginBottom: "16px", borderRadius: "8px", background: "#fff" }}>
       <div style={{ marginBottom: "8px" }}>
         <strong>{userName}</strong>{" "}
-        <span style={{ color: "#777", fontSize: "0.9em" }}>
-          {formatDate(createdAt)}
-        </span>
+        <span style={{ color: "#777", fontSize: "0.9em" }}>{formatDate(createdAt)}</span>
       </div>
 
       <p style={{ marginBottom: "8px" }}>{content}</p>
 
       {media.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            gap: "8px",
-            flexWrap: "wrap",
-            marginBottom: "8px",
-          }}
-        >
+        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "8px" }}>
           {media.map((m, idx) =>
             m.type === "image" ? (
               <img
                 key={idx}
                 src={m.url}
                 alt="media"
-                style={{
-                  width: "120px",
-                  height: "120px",
-                  borderRadius: "6px",
-                  objectFit: "cover",
-                }}
+                style={{ width: "120px", height: "120px", borderRadius: "6px", objectFit: "cover" }}
               />
             ) : (
-              <video
-                key={idx}
-                src={m.url}
-                controls
-                style={{
-                  width: "200px",
-                  height: "120px",
-                  borderRadius: "6px",
-                }}
-              />
+              <video key={idx} src={m.url} controls style={{ width: "200px", height: "120px", borderRadius: "6px" }} />
             )
           )}
         </div>
@@ -153,14 +119,7 @@ const Post: React.FC<PostProps> = ({
       <div style={{ marginTop: "4px" }}>
         <button
           onClick={handleLike}
-          style={{
-            background: "#007bff",
-            color: "white",
-            border: "none",
-            padding: "6px 12px",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
+          style={{ background: "#007bff", color: "white", border: "none", padding: "6px 12px", borderRadius: "4px", cursor: "pointer" }}
         >
           👍 Like ({likes.length})
         </button>
@@ -168,25 +127,13 @@ const Post: React.FC<PostProps> = ({
 
       <div style={{ marginTop: "12px" }}>
         <strong>Comments:</strong>
-        {comments.length === 0 && (
-          <p style={{ color: "#777", marginTop: "4px" }}>No comments yet</p>
-        )}
+        {comments.length === 0 && <p style={{ color: "#777", marginTop: "4px" }}>No comments yet</p>}
 
         {comments.map((c) => (
-          <div
-            key={c.id}
-            style={{
-              background: "#f9f9f9",
-              padding: "6px 10px",
-              borderRadius: "6px",
-              marginTop: "6px",
-            }}
-          >
+          <div key={c.id} style={{ background: "#f9f9f9", padding: "6px 10px", borderRadius: "6px", marginTop: "6px" }}>
             <div style={{ fontSize: "0.9em" }}>
               <strong>{c.user_name}</strong>{" "}
-              <span style={{ color: "#777", fontSize: "0.8em" }}>
-                {formatDate(c.created_at)}
-              </span>
+              <span style={{ color: "#777", fontSize: "0.8em" }}>{formatDate(c.created_at)}</span>
             </div>
             <div style={{ marginTop: "2px" }}>{c.content}</div>
           </div>
@@ -198,13 +145,7 @@ const Post: React.FC<PostProps> = ({
             value={newComment}
             placeholder="Write a comment..."
             onChange={(e) => setNewComment(e.target.value)}
-            style={{
-              width: "70%",
-              marginRight: "8px",
-              padding: "6px",
-              borderRadius: "4px",
-              border: "1px solid #ccc",
-            }}
+            style={{ width: "70%", marginRight: "8px", padding: "6px", borderRadius: "4px", border: "1px solid #ccc" }}
           />
           <button
             onClick={handleAddComment}
