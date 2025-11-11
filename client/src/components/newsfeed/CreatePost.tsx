@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import type { PostProps } from "../../types/posts"; // ✅ type-only import for consistency
-import MediaUploader from "./MediaUploader";
+import MediaUploader from "./MediaUploader"; // handles media selection
 import "../../css/CreatePost.css";
 
 interface CreatePostProps {
@@ -23,7 +22,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
 
     try {
       await axios.post("http://localhost:5000/api/posts", {
-        user_id: 1, // Replace with logged-in user ID if using AuthContext
+        user_id: 1, // replace with AuthContext user.id
         content,
         media,
       });

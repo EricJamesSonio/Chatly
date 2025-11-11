@@ -2,10 +2,10 @@ import React from "react";
 import { usePosts } from "../context/PostContext";
 import CreatePost from "../components/newsfeed/CreatePost";
 import Post from "../components/newsfeed/Post";
-import type { PostProps, CommentType } from "../types/posts"; // shared type
+import type { PostProps, CommentType } from "../types/posts"; // ✅ type-only import
 import "../css/FeedPage.css";
 
-// Make a type for posts without the refreshFeed prop
+// Type for posts without the refreshFeed prop
 type PostWithoutRefresh = Omit<PostProps, "refreshFeed">;
 
 const FeedPage: React.FC = () => {
