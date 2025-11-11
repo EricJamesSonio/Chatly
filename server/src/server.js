@@ -19,7 +19,7 @@ app.use(express.json());
 // ✅ CORS configuration (local + Render)
 const allowedOrigins = [
   "http://localhost:5173",                    // local React dev
-  "https://your-frontend-name.onrender.com"   // deployed frontend (replace this)
+  "https://Chatly-Client.onrender.com"   // deployed frontend (replace this)
 ];
 
 app.use(cors({
