@@ -1,5 +1,12 @@
 Fullstack project! 
 
+LATEST: i deployed this in render so yeah,, links are
+CLIENT :
+https://chatly-client-sen7.onrender.com
+
+SERVER:
+https://chatly-0b3p.onrender.com
+
 Chatly! a mini clone of messenger from facebook!
 
 Features:
