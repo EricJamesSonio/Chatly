@@ -21,15 +21,30 @@ export const login = async (req, res) => {
 };
 
 export const signup = async (req, res) => {
-  const { user_id, username, password } = req.body;
+  const { username, password } = req.body; // remove user_id
   try {
-    const [existing] = await db.execute("SELECT id FROM accounts WHERE username = ?", [username]);
-    if (existing.length > 0) return res.status(400).json({ message: "Username already exists" });
+    // Check if username already exists
+    const [existing] = await db.execute(
+      "SELECT id FROM accounts WHERE username = ?",
+      [username]
+    );
+    if (existing.length > 0)
+      return res.status(400).json({ message: "Username already exists" });
 
+    // Hash the password
     const hashed = await bcrypt.hash(password, 10);
-    await accountModel.create({ user_id, username, password: hashed });
 
-    res.status(201).json({ user: { username }, message: "Signup successful" });
+    // Insert new account (without user_id)
+    const [result] = await db.execute(
+      "INSERT INTO accounts (username, password) VALUES (?, ?)",
+      [username, hashed]
+    );
+
+    // Return the newly created user, including the auto-generated id
+    res.status(201).json({
+      user: { id: result.insertId, username },
+      message: "Signup successful",
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
