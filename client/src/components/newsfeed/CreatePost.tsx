@@ -21,7 +21,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
     if (!content.trim()) return;
 
     try {
-      await axios.post("${API_URL}/api/posts", {
+      await axios.post(`${API_URL}/api/posts`, {
         user_id: 1, // replace with AuthContext user.id
         content,
         media,
