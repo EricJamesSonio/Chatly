@@ -16,19 +16,26 @@ const FeedPage: React.FC = () => {
     Array.isArray(posts) && posts.length > 0
       ? posts.map((p: any) => ({
           id: p.id,
+          // Include both snake_case and camelCase versions
+          user_id: p.user_id ?? p.userId,
+          user_name: p.user_name ?? p.userName,
           userId: p.user_id ?? p.userId,
           userName: p.user_name ?? p.userName,
           content: p.content,
           media: p.media ?? [],
           likes: p.likes ?? [],
-          comments: (p.comments ?? []).map((c: any): CommentType => ({
+          created_at: p.created_at ?? p.createdAt,
+          createdAt: p.created_at ?? p.createdAt,
+          comments: (p.comments ?? []).map((c: any) => ({
             id: c.id,
-            user_id: c.user_id,
-            user_name: c.user_name,
+            user_id: c.user_id ?? c.userId,
+            user_name: c.user_name ?? c.userName,
+            userId: c.user_id ?? c.userId,
+            userName: c.user_name ?? c.userName,
             content: c.content,
-            created_at: c.created_at,
+            created_at: c.created_at ?? c.createdAt,
+            createdAt: c.created_at ?? c.createdAt,
           })),
-          createdAt: p.createdAt ?? p.created_at,
         }))
       : [];
 
