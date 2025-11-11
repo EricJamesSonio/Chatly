@@ -1,6 +1,4 @@
 export const createPostsTable = async (db) => {
-  await db.execute(`DROP TABLE IF EXISTS posts`);
-  
   await db.execute(`
     CREATE TABLE posts (
       id INT AUTO_INCREMENT PRIMARY KEY,

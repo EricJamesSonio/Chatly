@@ -11,23 +11,36 @@ import { seedAccounts } from './seeds/accountSeed.js';
 import { seedFriendlist } from './seeds/friendlistSeed.js';
 import { seedMessages } from './seeds/messageSeed.js';
 
+const dropTables = async () => {
+  await db.execute('SET FOREIGN_KEY_CHECKS = 0'); // disable FK checks temporarily
+
+  const tables = ['comments', 'posts', 'messages', 'friendlist', 'accounts', 'users'];
+  for (const table of tables) {
+    await db.execute(`DROP TABLE IF EXISTS ${table}`);
+    console.log(`🗑️ Dropped table if exists: ${table}`);
+  }
+
+  await db.execute('SET FOREIGN_KEY_CHECKS = 1'); // re-enable FK checks
+};
+
 const initDatabase = async () => {
   try {
     console.log('🚀 Initializing CHATLY Database...');
 
-    // Existing tables
+    // Safely drop existing tables first
+    await dropTables();
+
+    // Recreate tables
     await createUsersTable(db);
     await createAccountsTable(db);
     await createFriendlistTable(db);
     await createMessagesTable(db);
-
-    // New tables
     await createPostsTable(db);
     await createCommentsTable(db);
 
     console.log('✅ Tables created! Now seeding...');
 
-    // Existing seeds
+    // Seed data
     await seedUsers(db);
     await seedAccounts(db);
     await seedFriendlist(db);
