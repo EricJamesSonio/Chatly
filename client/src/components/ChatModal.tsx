@@ -15,25 +15,30 @@ interface ChatModalProps {
   style?: React.CSSProperties;
 }
 
-const ChatModal: React.FC<ChatModalProps> = ({
-  isOpen,
-  onClose,
-  user,
-  style,
-}) => {
+const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) => {
   const { messages, sendMessage, refreshMessages, socket, activeUsers } = useMessages();
   const [input, setInput] = useState("");
   const [minimized, setMinimized] = useState(false);
   const [newMessageAlert, setNewMessageAlert] = useState(false);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
+  const lastScrollPositions = useRef<Record<number, number>>({}); // store scroll for each user
 
   useEffect(() => {
     socketRef.current = socket;
   }, [socket]);
 
   useEffect(() => {
-    if (isOpen) refreshMessages(user.id);
+    if (isOpen) {
+      refreshMessages(user.id).then(() => {
+        const chatBody = chatBodyRef.current;
+        if (chatBody) {
+          // Restore previous scroll if exists, else scroll to bottom
+          const prevScroll = lastScrollPositions.current[user.id];
+          chatBody.scrollTop = prevScroll ?? chatBody.scrollHeight;
+        }
+      });
+    }
   }, [isOpen, user.id, refreshMessages]);
 
   useEffect(() => {
@@ -41,7 +46,19 @@ const ChatModal: React.FC<ChatModalProps> = ({
 
     const handleNewMessage = (msg: any) => {
       if (msg.sender_id === user.id || msg.receiver_id === user.id) {
-        refreshMessages(user.id);
+        const chatBody = chatBodyRef.current;
+        const isAtBottom = chatBody
+          ? chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 50
+          : true;
+
+        refreshMessages(user.id).then(() => {
+          if (chatBody && isAtBottom) {
+            chatBody.scrollTop = chatBody.scrollHeight;
+            setNewMessageAlert(false);
+          } else {
+            setNewMessageAlert(true);
+          }
+        });
       }
     };
 
@@ -51,48 +68,35 @@ const ChatModal: React.FC<ChatModalProps> = ({
     };
   }, [user.id, refreshMessages]);
 
-  // Auto-scroll effect with "new message" detection
+  // Save scroll position whenever user scrolls
   useEffect(() => {
     const chatBody = chatBodyRef.current;
     if (!chatBody) return;
 
-    const isNearBottom =
-      chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 50; // 50px tolerance
+    const handleScroll = () => {
+      lastScrollPositions.current[user.id] = chatBody.scrollTop;
+      const isNearBottom =
+        chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 50;
+      setNewMessageAlert(!isNearBottom);
+    };
 
-    if (isNearBottom) {
-      chatBody.scrollTo({
-        top: chatBody.scrollHeight,
-        behavior: "smooth",
-      });
-      setNewMessageAlert(false); // Hide alert if user is at bottom
-    } else {
-      // User scrolled up, show "new messages" alert
-      setNewMessageAlert(true);
-    }
-  }, [messages[user.id]]);
+    chatBody.addEventListener("scroll", handleScroll);
+    return () => chatBody.removeEventListener("scroll", handleScroll);
+  }, [user.id]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
     await sendMessage(user.id, input);
     setInput("");
 
-    // Scroll to bottom after sending
     const chatBody = chatBodyRef.current;
-    if (chatBody) {
-      chatBody.scrollTo({
-        top: chatBody.scrollHeight,
-        behavior: "smooth",
-      });
-    }
+    if (chatBody) chatBody.scrollTop = chatBody.scrollHeight;
   };
 
   const handleScrollToBottom = () => {
     const chatBody = chatBodyRef.current;
     if (chatBody) {
-      chatBody.scrollTo({
-        top: chatBody.scrollHeight,
-        behavior: "smooth",
-      });
+      chatBody.scrollTop = chatBody.scrollHeight;
       setNewMessageAlert(false);
     }
   };
@@ -104,24 +108,15 @@ const ChatModal: React.FC<ChatModalProps> = ({
       <div className={`chat-modal ${minimized ? "minimized" : ""}`}>
         <header className="chat-modal-header">
           <div className="chat-avatar-wrapper">
-            <UserAvatar
-              avatar={user.profile_image || "/assets/default.png"} 
-              size={50}
-              alt={user.name}
-            />
+            <UserAvatar avatar={user.profile_image || "/assets/default.png"} size={50} alt={user.name} />
             {activeUsers.includes(user.id) && <span className="active-indicator" />}
           </div>
           <h3>{user.name}</h3>
           <div>
-            <button
-              className="minimize-btn"
-              onClick={() => setMinimized((prev) => !prev)}
-            >
+            <button className="minimize-btn" onClick={() => setMinimized((p) => !p)}>
               {minimized ? "▢" : "_"}
             </button>
-            <button className="close-btn" onClick={onClose}>
-              X
-            </button>
+            <button className="close-btn" onClick={onClose}>X</button>
           </div>
         </header>
         {!minimized && (
@@ -144,7 +139,6 @@ const ChatModal: React.FC<ChatModalProps> = ({
               })}
             </div>
 
-            {/* New messages alert */}
             {newMessageAlert && (
               <div className="new-messages-alert" onClick={handleScrollToBottom}>
                 New messages below ⬇
@@ -159,9 +153,7 @@ const ChatModal: React.FC<ChatModalProps> = ({
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
               />
-              <button onClick={handleSend} aria-label="Send message">
-                ➤
-              </button>
+              <button onClick={handleSend} aria-label="Send message">➤</button>
             </footer>
           </>
         )}
