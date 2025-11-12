@@ -628,3 +628,16 @@
     }
   }
 }
+
+
+.chat-sidebar {
+  pointer-events: auto;
+}
+
+.chat-modal-overlay {
+  pointer-events: none;
+}
+
+.chat-modal {
+  pointer-events: all;
+}
