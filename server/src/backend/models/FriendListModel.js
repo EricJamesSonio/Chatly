@@ -69,19 +69,23 @@ export default class FriendlistModel {
 
   // ✅ Accept a friend request
   async acceptRequest(id) {
-    await this.db.execute(
-      'UPDATE friendlist SET status = "accepted" WHERE id = ?',
-      [id]
-    );
+// ✅ Correct
+await this.db.execute(
+  "UPDATE friendlist SET status = 'accepted' WHERE id = ?",
+  [id]
+);
+
     return true;
   }
 
   // ✅ Block a friend
   async blockFriend(id) {
-    await this.db.execute(
-      'UPDATE friendlist SET status = "blocked" WHERE id = ?',
-      [id]
-    );
+// ✅ Correct
+await this.db.execute(
+  "UPDATE friendlist SET status = 'blocked' WHERE id = ?",
+  [id]
+);
+
     return true;
   }
 
