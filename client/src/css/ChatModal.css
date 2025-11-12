@@ -335,3 +335,44 @@
   }
 }
 
+/* ============================================================
+   ✅ FIX: Prevent sidebar from overlapping chat modal on mobile
+   ============================================================ */
+
+/* Make sure the chat modal always appears above the sidebar */
+.chat-modal-overlay {
+  z-index: 2000 !important; /* higher than sidebar (z-index: 900) */
+  pointer-events: none; /* allow clicks to pass except modal itself */
+}
+
+/* Allow typing and interaction inside the chat modal */
+.chat-modal {
+  pointer-events: all;
+}
+
+/* Align modal overlay correctly when sidebar is expanded or collapsed */
+.chat-modal-overlay:not(.collapsed) {
+  right: 330px; /* same as expanded sidebar width */
+}
+
+.chat-modal-overlay.collapsed {
+  right: 70px; /* same as collapsed sidebar width */
+}
+
+/* ----------------------------
+   Mobile & Tablet adjustments
+   ---------------------------- */
+@media (max-width: 900px) {
+  .chat-modal-overlay,
+  .chat-modal-overlay.collapsed {
+    right: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    z-index: 3000 !important; /* ensure it's on top of sidebar */
+  }
+
+  /* Optional: push modal up slightly if the sidebar bottom sheet covers it */
+  .chat-modal {
+    margin-bottom: 60px; /* adjust this to match sidebar height */
+  }
+}
