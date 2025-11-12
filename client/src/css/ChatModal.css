@@ -376,3 +376,65 @@
     margin-bottom: 60px; /* adjust this to match sidebar height */
   }
 }
+
+/* ============================================================
+   ✅ FIX: Improve chat input + send button layout on mobile
+   ============================================================ */
+
+@media (max-width: 900px) {
+  /* Make sure the input area stays visible and well-sized */
+  .chat-input-area {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    padding: 10px 8px;
+    border-top: 1px solid #ccc;
+    z-index: 3100; /* above everything else */
+  }
+
+  /* Input should take most of the width and be taller */
+  .chat-input-area input {
+    flex: 1;
+    min-height: 44px;
+    border-radius: 25px;
+    padding: 10px 14px;
+    font-size: 1rem;
+    line-height: 1.4;
+    border: 1px solid #bbb;
+  }
+
+  /* Send button properly aligned and larger */
+  .chat-input-area button {
+    margin-left: 8px;
+    padding: 10px 16px;
+    border-radius: 25px;
+    background-color: #1976d2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .chat-input-area button:hover {
+    background-color: #115293;
+  }
+
+  /* Prevent the sidebar margin from shrinking the modal area too much */
+  .chat-modal {
+    margin-bottom: 0; /* reset previous margin fix */
+    height: 75vh; /* make it a bit taller */
+  }
+
+  /* Scrollable body area so input stays fixed */
+  .chat-body {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 80px; /* space for the input area */
+  }
+}
+
+
