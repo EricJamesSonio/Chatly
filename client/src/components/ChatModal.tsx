@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import "../css/ChatModal.css";
 import { useMessages } from "../context/MessagesContext";
 import type { Socket } from "socket.io-client";
-import UserAvatar from "./UserAvatar"; // <-- import here
+import UserAvatar from "./UserAvatar";
 
 interface ChatModalProps {
   isOpen: boolean;
@@ -14,7 +14,6 @@ interface ChatModalProps {
   };
   style?: React.CSSProperties;
 }
-
 
 const ChatModal: React.FC<ChatModalProps> = ({
   isOpen,
@@ -38,13 +37,11 @@ const ChatModal: React.FC<ChatModalProps> = ({
 
   useEffect(() => {
     if (!socketRef.current) return;
-
     const handleNewMessage = (msg: any) => {
       if (msg.sender_id === user.id || msg.receiver_id === user.id) {
         refreshMessages(user.id);
       }
     };
-
     socketRef.current.on("new_message", handleNewMessage);
     return () => {
       socketRef.current?.off("new_message", handleNewMessage);
@@ -69,30 +66,28 @@ const ChatModal: React.FC<ChatModalProps> = ({
   return (
     <div className="chat-modal-overlay" style={style}>
       <div className={`chat-modal ${minimized ? "minimized" : ""}`}>
-      <header className="chat-modal-header">
-        <div className="chat-avatar-wrapper">
-          <UserAvatar
-            avatar={user.profile_image || "/assets/default.png"} 
-            size={50}
-            alt={user.name}
-          />
-          {activeUsers.includes(user.id) && <span className="active-indicator" />}
-        </div>
-        <h3>{user.name}</h3>
-        <div>
-          <button
-            className="minimize-btn"
-            onClick={() => setMinimized((prev) => !prev)}
-          >
-            {minimized ? "▢" : "_"}
-          </button>
-          <button className="close-btn" onClick={onClose}>
-            X
-          </button>
-        </div>
-      </header>
-
-
+        <header className="chat-modal-header">
+          <div className="chat-avatar-wrapper">
+            <UserAvatar
+              avatar={user.profile_image || "/assets/default.png"} 
+              size={50}
+              alt={user.name}
+            />
+            {activeUsers.includes(user.id) && <span className="active-indicator" />}
+          </div>
+          <h3>{user.name}</h3>
+          <div>
+            <button
+              className="minimize-btn"
+              onClick={() => setMinimized((prev) => !prev)}
+            >
+              {minimized ? "▢" : "_"}
+            </button>
+            <button className="close-btn" onClick={onClose}>
+              X
+            </button>
+          </div>
+        </header>
         {!minimized && (
           <>
             <div className="chat-body" ref={chatBodyRef}>
@@ -112,7 +107,6 @@ const ChatModal: React.FC<ChatModalProps> = ({
                 );
               })}
             </div>
-
             <footer className="chat-input-area">
               <input
                 type="text"
@@ -121,7 +115,9 @@ const ChatModal: React.FC<ChatModalProps> = ({
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
               />
-              <button onClick={handleSend}>Send</button>
+              <button onClick={handleSend} aria-label="Send message">
+                ➤
+              </button>
             </footer>
           </>
         )}
@@ -129,6 +125,5 @@ const ChatModal: React.FC<ChatModalProps> = ({
     </div>
   );
 };
-
 
 export default ChatModal;
