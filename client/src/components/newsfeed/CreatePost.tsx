@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import MediaUploader from "./MediaUploader"; // handles media selection
-import type { Media } from "./MediaUploader"; 
+import MediaUploader, { type Media } from "./MediaUploader";
 import "../../css/CreatePost.css";
 import { useAuth } from "../../context/AuthContext";
 
@@ -14,12 +13,14 @@ interface CreatePostProps {
 const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
   const { user } = useAuth();
   const [content, setContent] = useState("");
-  const [media, setMedia] = useState<Media[]>([]);
   const [files, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!content.trim() || !user) return;
+
+    setLoading(true);
 
     try {
       const formData = new FormData();
@@ -33,11 +34,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
       });
 
       setContent("");
-      setMedia([]);
       setFiles([]);
       refreshFeed?.();
     } catch (err) {
       console.error("❌ Failed to create post:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,25 +67,21 @@ const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
           border: "1px solid #ccc",
         }}
       />
-      <MediaUploader
-        onMediaChange={(previewMedia, actualFiles) => {
-          setMedia(previewMedia);
-          setFiles(actualFiles);
-        }}
-      />
+      <MediaUploader onMediaChange={(_, actualFiles) => setFiles(actualFiles)} />
       <button
         type="submit"
+        disabled={loading || !content.trim()}
         style={{
           marginTop: "8px",
           padding: "6px 12px",
-          background: "#007bff",
+          background: loading || !content.trim() ? "#999" : "#007bff",
           color: "#fff",
           border: "none",
           borderRadius: "4px",
-          cursor: "pointer",
+          cursor: loading || !content.trim() ? "not-allowed" : "pointer",
         }}
       >
-        Post
+        {loading ? "Posting..." : "Post"}
       </button>
     </form>
   );

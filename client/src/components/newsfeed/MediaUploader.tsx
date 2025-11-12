@@ -10,17 +10,15 @@ interface MediaUploaderProps {
 }
 
 const MediaUploader: React.FC<MediaUploaderProps> = ({ onMediaChange }) => {
-  const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<Media[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
     const selectedFiles = Array.from(e.target.files);
-    setFiles(selectedFiles);
 
     const mediaPreviews: Media[] = selectedFiles.map((file) => ({
       url: URL.createObjectURL(file),
-      type: file.type.startsWith("image") ? "image" : "video", // ✅ Type assertion
+      type: file.type.startsWith("image") ? "image" : "video",
     }));
 
     setPreviews(mediaPreviews);
@@ -35,7 +33,7 @@ const MediaUploader: React.FC<MediaUploaderProps> = ({ onMediaChange }) => {
         accept="image/*,video/*"
         onChange={handleFileChange}
       />
-      <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
+      <div className="media-previews">
         {previews.map((media, idx) => (
           <span key={idx}>{media.url.split("/").pop()}</span>
         ))}

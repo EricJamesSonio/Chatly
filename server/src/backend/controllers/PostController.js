@@ -2,15 +2,23 @@ import Post from "../models/PostModel.js";
 
 const postModel = (db) => new Post(db);
 
+
 export const createPost = (db) => async (req, res) => {
   try {
-    const { user_id, content } = req.body;
-    const files = req.files || []; // ✅ JS version
+    let { user_id, content } = req.body;
 
-    // Convert uploaded files to public URLs
-    const media = files.map(file => ({
+    if (!user_id || !content) {
+      return res.status(400).json({ error: "Missing user_id or content" });
+    }
+
+    user_id = parseInt(user_id);
+    content = content.toString();
+
+    const files = req.files || [];
+
+    const media = files.map((file) => ({
       url: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
-      type: file.mimetype,
+      type: file.mimetype.startsWith("image") ? "image" : "video", // safe string
     }));
 
     const [result] = await db.execute(
@@ -33,9 +41,7 @@ export const createPost = (db) => async (req, res) => {
   }
 };
 
-
-
-
+// Get posts with JSON parsing
 export const getPosts = (db) => async (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -44,8 +50,7 @@ export const getPosts = (db) => async (req, res) => {
   try {
     const [posts] = await postModel(db).getAll(limit, offset);
 
-    // ✅ Parse JSON columns
-    const formattedPosts = posts.map(post => ({
+    const formattedPosts = posts.map((post) => ({
       ...post,
       media: safeJSON(post.media),
       likes: safeJSON(post.likes),
@@ -59,15 +64,13 @@ export const getPosts = (db) => async (req, res) => {
   }
 };
 
-// Helper function to safely parse JSON fields
 const safeJSON = (data) => {
   try {
-    return typeof data === "string" ? JSON.parse(data) : (data || []);
+    return typeof data === "string" ? JSON.parse(data) : data || [];
   } catch {
     return [];
   }
 };
-
 
 
 export const getPostById = (db) => async (req, res) => {
