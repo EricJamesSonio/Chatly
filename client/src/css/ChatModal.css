@@ -88,31 +88,36 @@
   align-self: flex-start;
 }
 
-/* Input area */
+/* Input area - DEFAULT (Desktop) */
 .chat-input-area {
   display: flex;
   padding: 10px;
   border-top: 1px solid #ccc;
   background-color: #fff;
+  align-items: center;
+  gap: 8px;
 }
 
 .chat-input-area input {
   flex: 1;
-  padding: 8px 15px;
+  padding: 10px 15px;
   border-radius: 20px;
   border: 1px solid #ccc;
   outline: none;
+  font-size: 0.95rem;
 }
 
 .chat-input-area button {
-  margin-left: 8px;
-  padding: 8px 15px;
+  padding: 10px 20px;
   border-radius: 20px;
   background-color: #1976d2;
   color: white;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .chat-input-area button:hover {
@@ -137,8 +142,8 @@
   display: flex;
   flex-direction: column;
 }
-.avatar-wrapper,
 
+.avatar-wrapper,
 .chat-avatar-container,
 .modal-avatar-wrapper {
   position: relative;
@@ -147,15 +152,16 @@
 
 .active-indicator {
   position: absolute;
-  bottom: 0; /* or top/right if you prefer */
+  bottom: 0;
   right: 0;
   width: 10px;
   height: 10px;
-  background-color: #4caf50; /* green */
-  border: 2px solid white; /* border to make it visible */
+  background-color: #4caf50;
+  border: 2px solid white;
   border-radius: 50%;
   z-index: 10;
 }
+
 .chat-avatar-wrapper {
   position: relative;
   display: inline-block;
@@ -163,15 +169,16 @@
 
 .chat-avatar-wrapper .active-indicator {
   position: absolute;
-  bottom: -2px; /* move outside */
-  right: -2px;  /* move outside */
-  width: 12px;  /* adjust size */
+  bottom: -2px;
+  right: -2px;
+  width: 12px;
   height: 12px;
   background-color: #4caf50;
-  border: 2px solid white; /* optional: border around dot */
+  border: 2px solid white;
   border-radius: 50%;
   z-index: 10;
 }
+
 /* --------------------------- */
 /* RESPONSIVE CHAT MODAL 💬 */
 /* --------------------------- */
@@ -179,7 +186,7 @@
 /* For tablets & smaller (≤ 768px) */
 @media (max-width: 768px) {
   .chat-modal-overlay {
-    right: 0; /* align to screen edge */
+    right: 0;
     left: 0;
     bottom: 0;
     align-items: center;
@@ -209,18 +216,24 @@
     padding: 10px;
   }
 
+  /* FIXED: Input takes most space, button is compact */
   .chat-input-area {
     padding: 8px;
+    gap: 6px;
   }
 
   .chat-input-area input {
-    padding: 8px 12px;
+    flex: 1;
+    padding: 10px 14px;
     font-size: 0.95rem;
+    min-width: 0; /* prevents overflow */
   }
 
   .chat-input-area button {
-    padding: 8px 14px;
-    font-size: 0.95rem;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+    min-width: auto;
   }
 }
 
@@ -259,18 +272,23 @@
     max-width: 85%;
   }
 
+  /* FIXED: Prioritize input field size */
   .chat-input-area {
-    padding: 6px;
+    padding: 8px 6px;
+    gap: 6px;
   }
 
   .chat-input-area input {
+    flex: 1;
     font-size: 0.9rem;
-    padding: 7px 10px;
+    padding: 10px 12px;
+    min-width: 0;
   }
 
   .chat-input-area button {
-    font-size: 0.9rem;
-    padding: 7px 12px;
+    font-size: 0.85rem;
+    padding: 10px 14px;
+    flex-shrink: 0;
   }
 
   .message-time {
@@ -288,12 +306,15 @@
     font-size: 0.9rem;
   }
 
+  /* FIXED: Keep input large, button compact */
   .chat-input-area input {
     font-size: 0.85rem;
+    padding: 9px 10px;
   }
 
   .chat-input-area button {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
+    padding: 9px 12px;
   }
 
   .chat-message {
@@ -301,13 +322,12 @@
   }
 }
 
-
 /* --- FIX: Prevent sidebar overlaying chat modal/input --- */
 
 /* Ensure the modal sits above the sidebar visually */
 .chat-modal-overlay {
-  z-index: 2000; /* higher than sidebar */
-  pointer-events: none; /* default */
+  z-index: 2000;
+  pointer-events: none;
 }
 
 /* Allow typing area to receive clicks */
@@ -317,11 +337,11 @@
 
 /* Adjust modal position dynamically for collapsed sidebar */
 .chat-modal-overlay:not(.collapsed) {
-  right: 330px; /* matches expanded sidebar width */
+  right: 330px;
 }
 
 .chat-modal-overlay.collapsed {
-  right: 70px; /* matches collapsed sidebar width */
+  right: 70px;
 }
 
 /* On smaller screens, sidebar becomes bottom sheet — so make modal full width */
@@ -341,8 +361,8 @@
 
 /* Make sure the chat modal always appears above the sidebar */
 .chat-modal-overlay {
-  z-index: 2000 !important; /* higher than sidebar (z-index: 900) */
-  pointer-events: none; /* allow clicks to pass except modal itself */
+  z-index: 2000 !important;
+  pointer-events: none;
 }
 
 /* Allow typing and interaction inside the chat modal */
@@ -352,11 +372,11 @@
 
 /* Align modal overlay correctly when sidebar is expanded or collapsed */
 .chat-modal-overlay:not(.collapsed) {
-  right: 330px; /* same as expanded sidebar width */
+  right: 330px;
 }
 
 .chat-modal-overlay.collapsed {
-  right: 70px; /* same as collapsed sidebar width */
+  right: 70px;
 }
 
 /* ----------------------------
@@ -368,21 +388,10 @@
     right: 0 !important;
     left: 0 !important;
     bottom: 0 !important;
-    z-index: 3000 !important; /* ensure it's on top of sidebar */
+    z-index: 3000 !important;
   }
 
-  /* Optional: push modal up slightly if the sidebar bottom sheet covers it */
-  .chat-modal {
-    margin-bottom: 60px; /* adjust this to match sidebar height */
-  }
-}
-
-/* ============================================================
-   ✅ FIX: Improve chat input + send button layout on mobile
-   ============================================================ */
-
-@media (max-width: 900px) {
-  /* Make sure the input area stays visible and well-sized */
+  /* FIXED: Better input/button balance */
   .chat-input-area {
     position: sticky;
     bottom: 0;
@@ -391,32 +400,35 @@
     align-items: center;
     padding: 10px 8px;
     border-top: 1px solid #ccc;
-    z-index: 3100; /* above everything else */
+    z-index: 3100;
+    gap: 8px;
   }
 
-  /* Input should take most of the width and be taller */
+  /* Input should take MOST of the width */
   .chat-input-area input {
     flex: 1;
-    min-height: 44px;
-    border-radius: 25px;
+    min-height: 40px;
+    border-radius: 22px;
     padding: 10px 14px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.4;
     border: 1px solid #bbb;
+    min-width: 0; /* Important: prevents input overflow */
   }
 
-  /* Send button properly aligned and larger */
+  /* Send button stays compact and icon-friendly */
   .chat-input-area button {
-    margin-left: 8px;
-    padding: 10px 16px;
-    border-radius: 25px;
+    margin-left: 0;
+    padding: 10px 18px;
+    border-radius: 22px;
     background-color: #1976d2;
     color: white;
     border: none;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     flex-shrink: 0;
+    min-width: auto;
   }
 
   .chat-input-area button:hover {
@@ -425,16 +437,14 @@
 
   /* Prevent the sidebar margin from shrinking the modal area too much */
   .chat-modal {
-    margin-bottom: 0; /* reset previous margin fix */
-    height: 75vh; /* make it a bit taller */
+    margin-bottom: 0;
+    height: 75vh;
   }
 
   /* Scrollable body area so input stays fixed */
   .chat-body {
     flex: 1;
     overflow-y: auto;
-    padding-bottom: 80px; /* space for the input area */
+    padding-bottom: 10px;
   }
 }
-
-
