@@ -23,11 +23,11 @@ interface Props {
 }
 
 const ProfileInfo: React.FC<Props> = ({ user, isEditing = false, onSave }) => {
-  const [editData, setEditData] = useState<User>(user);
+  const [editData, setEditData] = useState<User>({ ...user });
 
   // Sync editData whenever user changes
   useEffect(() => {
-    setEditData(user);
+    setEditData({ ...user });
   }, [user]);
 
   const handleChange = (
@@ -37,7 +37,24 @@ const ProfileInfo: React.FC<Props> = ({ user, isEditing = false, onSave }) => {
   };
 
   const handleSave = () => {
-    if (onSave) onSave(editData);
+    if (!onSave) return;
+
+    // Ensure no field is undefined; fallback to original user value
+    const payload: User = {
+      ...editData,
+      name: editData.name || user.name,
+      birthdate: editData.birthdate || user.birthdate,
+      location: editData.location || user.location,
+      hobbies: editData.hobbies || user.hobbies,
+      talents: editData.talents || user.talents,
+      facebook_url: editData.facebook_url || user.facebook_url || "",
+      instagram_url: editData.instagram_url || user.instagram_url || "",
+      tiktok_url: editData.tiktok_url || user.tiktok_url || "",
+      profile_image: editData.profile_image || user.profile_image,
+      cover_photo: editData.cover_photo || user.cover_photo,
+    };
+
+    onSave(payload);
   };
 
   return (
