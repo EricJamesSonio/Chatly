@@ -154,42 +154,42 @@ body[data-theme="colorblind"] .profile-card {
   }
 }
 /* ========================
-   THEME: PURPLE MODE
+   THEME: LIGHT PURPLE MODE
    ======================== */
 body[data-theme="purple"] {
-  background: linear-gradient(180deg, #4b0082, #7d3c98);
-  color: #f3e8ff;
+  background: linear-gradient(180deg, #e6e6fa, #d8bfd8); /* light lavender gradient */
+  color: #3d2c57; /* dark purple text for readability */
 }
 
 body[data-theme="purple"] nav {
-  background: rgba(155, 89, 182, 0.8);
-  color: #f3e8ff;
+  background: rgba(147, 112, 219, 0.8); /* medium purple */
+  color: #fff;
 }
 
 body[data-theme="purple"] .profile-card {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(155, 89, 182, 0.3);
-  box-shadow: 0 4px 20px rgba(155, 89, 182, 0.2);
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(147, 112, 219, 0.4);
+  box-shadow: 0 4px 20px rgba(147, 112, 219, 0.2);
 }
 
-/* Optional: Chat window / messages */
+/* Chat window / modal */
 body[data-theme="purple"] .chat-window,
 body[data-theme="purple"] .chat-modal {
-  background-color: rgba(75, 0, 130, 0.9);
-  color: #f3e8ff;
+  background-color: #f3e8ff; /* very light purple */
+  color: #3d2c57;
 }
 
 body[data-theme="purple"] .chat-message.sent {
-  background-color: #9b59b6;
-  color: #f3e8ff;
+  background-color: #b19cd9; /* soft purple */
+  color: #fff;
 }
 
 body[data-theme="purple"] .chat-message.received {
-  background-color: #7d3c98;
-  color: #f3e8ff;
+  background-color: #d8bfd8; /* lavender */
+  color: #3d2c57;
 }
 
 body[data-theme="purple"] .chat-input-area button {
-  background-color: #9b59b6;
-  color: #f3e8ff;
+  background-color: #b19cd9;
+  color: #fff;
 }
