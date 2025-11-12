@@ -18,6 +18,7 @@ const ThemeSwitcher: React.FC = () => {
         <option value="red">❤️ Red</option>
         <option value="blue">💙 Blue</option>
         <option value="colorblind">👁️ Colorblind</option>
+        <option value="purple">💜 Purple</option>
       </select>
     </div>
   );
