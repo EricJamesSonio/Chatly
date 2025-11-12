@@ -300,3 +300,38 @@
     font-size: 0.85rem;
   }
 }
+
+
+/* --- FIX: Prevent sidebar overlaying chat modal/input --- */
+
+/* Ensure the modal sits above the sidebar visually */
+.chat-modal-overlay {
+  z-index: 2000; /* higher than sidebar */
+  pointer-events: none; /* default */
+}
+
+/* Allow typing area to receive clicks */
+.chat-modal {
+  pointer-events: all;
+}
+
+/* Adjust modal position dynamically for collapsed sidebar */
+.chat-modal-overlay:not(.collapsed) {
+  right: 330px; /* matches expanded sidebar width */
+}
+
+.chat-modal-overlay.collapsed {
+  right: 70px; /* matches collapsed sidebar width */
+}
+
+/* On smaller screens, sidebar becomes bottom sheet — so make modal full width */
+@media (max-width: 900px) {
+  .chat-modal-overlay,
+  .chat-modal-overlay.collapsed {
+    right: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    z-index: 2000;
+  }
+}
+
