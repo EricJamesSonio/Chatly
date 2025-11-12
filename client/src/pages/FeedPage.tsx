@@ -12,32 +12,24 @@ const FeedPage: React.FC = () => {
   const { posts, loading, error, refreshPosts } = usePosts();
 
   // Ensure posts array is correctly typed
-  const safePosts: PostWithoutRefresh[] =
-    Array.isArray(posts) && posts.length > 0
-      ? posts.map((p: any) => ({
-          id: p.id,
-          // Include both snake_case and camelCase versions
-          user_id: p.user_id ?? p.userId,
-          user_name: p.user_name ?? p.userName,
-          userId: p.user_id ?? p.userId,
-          userName: p.user_name ?? p.userName,
-          content: p.content,
-          media: p.media ?? [],
-          likes: p.likes ?? [],
-          created_at: p.created_at ?? p.createdAt,
-          createdAt: p.created_at ?? p.createdAt,
-          comments: (p.comments ?? []).map((c: any) => ({
-            id: c.id,
-            user_id: c.user_id ?? c.userId,
-            user_name: c.user_name ?? c.userName,
-            userId: c.user_id ?? c.userId,
-            userName: c.user_name ?? c.userName,
-            content: c.content,
-            created_at: c.created_at ?? c.createdAt,
-            createdAt: c.created_at ?? c.createdAt,
-          })),
-        }))
-      : [];
+const safePosts: PostWithoutRefresh[] =
+  Array.isArray(posts) ? posts.map((p: any) => ({
+    id: p.id,
+    userId: p.user_id,
+    userName: p.userName,
+    content: p.content,
+    media: p.media || [],
+    likes: p.likes || [],
+    createdAt: p.created_at,
+    comments: (p.comments || []).map((c: any) => ({
+      id: c.id,
+      userId: c.user_id,
+      userName: c.userName,
+      content: c.content,
+      createdAt: c.created_at
+    }))
+  })) : [];
+
 
   if (loading) return <p>Loading posts...</p>;
   if (error) return <p>{error}</p>;
