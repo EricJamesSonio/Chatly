@@ -24,6 +24,7 @@ const ChatModal: React.FC<ChatModalProps> = ({
   const { messages, sendMessage, refreshMessages, socket, activeUsers } = useMessages();
   const [input, setInput] = useState("");
   const [minimized, setMinimized] = useState(false);
+  const [newMessageAlert, setNewMessageAlert] = useState(false);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
 
@@ -37,28 +38,63 @@ const ChatModal: React.FC<ChatModalProps> = ({
 
   useEffect(() => {
     if (!socketRef.current) return;
+
     const handleNewMessage = (msg: any) => {
       if (msg.sender_id === user.id || msg.receiver_id === user.id) {
         refreshMessages(user.id);
       }
     };
+
     socketRef.current.on("new_message", handleNewMessage);
     return () => {
       socketRef.current?.off("new_message", handleNewMessage);
     };
   }, [user.id, refreshMessages]);
 
+  // Auto-scroll effect with "new message" detection
   useEffect(() => {
-    chatBodyRef.current?.scrollTo({
-      top: chatBodyRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+    const chatBody = chatBodyRef.current;
+    if (!chatBody) return;
+
+    const isNearBottom =
+      chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 50; // 50px tolerance
+
+    if (isNearBottom) {
+      chatBody.scrollTo({
+        top: chatBody.scrollHeight,
+        behavior: "smooth",
+      });
+      setNewMessageAlert(false); // Hide alert if user is at bottom
+    } else {
+      // User scrolled up, show "new messages" alert
+      setNewMessageAlert(true);
+    }
   }, [messages[user.id]]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
     await sendMessage(user.id, input);
     setInput("");
+
+    // Scroll to bottom after sending
+    const chatBody = chatBodyRef.current;
+    if (chatBody) {
+      chatBody.scrollTo({
+        top: chatBody.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleScrollToBottom = () => {
+    const chatBody = chatBodyRef.current;
+    if (chatBody) {
+      chatBody.scrollTo({
+        top: chatBody.scrollHeight,
+        behavior: "smooth",
+      });
+      setNewMessageAlert(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -107,6 +143,14 @@ const ChatModal: React.FC<ChatModalProps> = ({
                 );
               })}
             </div>
+
+            {/* New messages alert */}
+            {newMessageAlert && (
+              <div className="new-messages-alert" onClick={handleScrollToBottom}>
+                New messages below ⬇
+              </div>
+            )}
+
             <footer className="chat-input-area">
               <input
                 type="text"
