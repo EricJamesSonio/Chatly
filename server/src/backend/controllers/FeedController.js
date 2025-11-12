@@ -29,15 +29,14 @@ export const getNewsFeed = (db) => async (req, res) => {
     const placeholders = friendIds.map(() => "?").join(",");
 
     // ✅ Fetch posts joined with users
-    const [posts] = await db.execute(
-      `SELECT p.id, p.user_id, u.name AS userName, p.content, p.media, p.likes, 
-              p.created_at, p.updated_at
-       FROM posts p
-       JOIN users u ON p.user_id = u.id
-       WHERE p.user_id IN (${placeholders})
-       ORDER BY p.created_at DESC`,
-      friendIds
-    );
+const [posts] = await db.execute(
+  `SELECT p.id, p.user_id, u.name AS userName, p.content, p.media, p.likes, 
+          p.created_at, p.updated_at
+   FROM posts p
+   JOIN users u ON p.user_id = u.id
+   ORDER BY p.created_at DESC`
+);
+
 
     // 🗨️ Fetch all comments for these posts
     const postIds = posts.map(p => p.id);
