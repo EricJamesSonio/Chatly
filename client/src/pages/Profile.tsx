@@ -54,23 +54,29 @@ const Profile: React.FC = () => {
     fetchUser();
   }, []);
 
-  const handleSave = async (updatedUser: UserWithUsername) => {
-    if (!user) return;
+const handleSave = async (updatedUser: UserWithUsername) => {
+  if (!user) return;
 
-    try {
-      const res = await fetch(`${API_URL}/api/users/${user.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedUser),
-      });
-      if (!res.ok) throw new Error("Failed to update user profile");
+  try {
+    // Create payload for backend (exclude username)
+    const payload = { ...updatedUser };
+    delete payload.username; // Remove username because users table does not have this column
 
-      setUser(updatedUser); // Update locally
-      setIsEditing(false);  // Switch back to view mode
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
+    const res = await fetch(`${API_URL}/api/users/${user.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error("Failed to update user profile");
+
+    setUser({ ...user, ...payload }); // Update local state
+    setIsEditing(false);  // Exit edit mode
+  } catch (err: any) {
+    alert(err.message);
+  }
+};
+
 
   if (loading) return <Layout><p className="loading">Loading profile...</p></Layout>;
   if (error) return <Layout><p className="error">❌ {error}</p></Layout>;
