@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import MediaUploader from "./MediaUploader"; // handles media selection
 import "../../css/CreatePost.css";
+import { useAuth } from "../../context/AuthContext"; // ✅ import AuthContext
+
 const API_URL = import.meta.env.VITE_API_URL;
+
 interface CreatePostProps {
   refreshFeed?: () => void;
 }
@@ -13,23 +16,24 @@ interface Media {
 }
 
 const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
+  const { user } = useAuth(); // ✅ get logged-in user
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<Media[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim()) return;
+    if (!content.trim() || !user) return; // ✅ ensure user exists
 
     try {
       await axios.post(`${API_URL}/api/posts`, {
-        user_id: 1, // replace with AuthContext user.id
+        user_id: user.id, // ✅ use logged-in user ID
         content,
         media,
       });
 
       setContent("");
       setMedia([]);
-      refreshFeed?.();
+      refreshFeed?.(); // refresh feed after posting
     } catch (err) {
       console.error("❌ Failed to create post:", err);
     }
@@ -50,7 +54,14 @@ const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
         placeholder="What's on your mind?"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        style={{ width: "100%", height: "60px", marginBottom: "8px", padding: "6px", borderRadius: "4px", border: "1px solid #ccc" }}
+        style={{
+          width: "100%",
+          height: "60px",
+          marginBottom: "8px",
+          padding: "6px",
+          borderRadius: "4px",
+          border: "1px solid #ccc",
+        }}
       />
       <MediaUploader onMediaChange={setMedia} />
       <button
