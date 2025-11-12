@@ -4,11 +4,18 @@ const postModel = (db) => new Post(db);
 
 export const createPost = (db) => async (req, res) => {
   try {
-    const { user_id, content, media } = req.body;
+    const { user_id, content } = req.body;
+    const files = req.files || []; // ✅ JS version
+
+    // Convert uploaded files to public URLs
+    const media = files.map(file => ({
+      url: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
+      type: file.mimetype,
+    }));
 
     const [result] = await db.execute(
       "INSERT INTO posts (user_id, content, media) VALUES (?, ?, ?)",
-      [user_id, content, JSON.stringify(media || [])]
+      [user_id, content, JSON.stringify(media)]
     );
 
     const [newPost] = await db.execute(
@@ -18,13 +25,15 @@ export const createPost = (db) => async (req, res) => {
 
     res.status(201).json({
       message: "Post created",
-      post: newPost[0], // ✅ includes created_at
+      post: newPost[0],
     });
   } catch (err) {
     console.error("❌ createPost error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
+
 
 
 export const getPosts = (db) => async (req, res) => {

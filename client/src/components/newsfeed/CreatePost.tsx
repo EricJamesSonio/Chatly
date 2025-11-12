@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import MediaUploader from "./MediaUploader"; // handles media selection
+import type { Media } from "./MediaUploader"; 
 import "../../css/CreatePost.css";
-import { useAuth } from "../../context/AuthContext"; // ✅ import AuthContext
+import { useAuth } from "../../context/AuthContext";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -10,30 +11,31 @@ interface CreatePostProps {
   refreshFeed?: () => void;
 }
 
-interface Media {
-  url: string;
-  type: string;
-}
-
 const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
-  const { user } = useAuth(); // ✅ get logged-in user
+  const { user } = useAuth();
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<Media[]>([]);
+  const [files, setFiles] = useState<File[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!content.trim() || !user) return; // ✅ ensure user exists
+    if (!content.trim() || !user) return;
 
     try {
-      await axios.post(`${API_URL}/api/posts`, {
-        user_id: user.id, // ✅ use logged-in user ID
-        content,
-        media,
+      const formData = new FormData();
+      formData.append("user_id", user.id.toString());
+      formData.append("content", content);
+
+      files.forEach((file) => formData.append("media", file));
+
+      await axios.post(`${API_URL}/api/posts`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       setContent("");
       setMedia([]);
-      refreshFeed?.(); // refresh feed after posting
+      setFiles([]);
+      refreshFeed?.();
     } catch (err) {
       console.error("❌ Failed to create post:", err);
     }
@@ -63,7 +65,12 @@ const CreatePost: React.FC<CreatePostProps> = ({ refreshFeed }) => {
           border: "1px solid #ccc",
         }}
       />
-      <MediaUploader onMediaChange={setMedia} />
+      <MediaUploader
+        onMediaChange={(previewMedia, actualFiles) => {
+          setMedia(previewMedia);
+          setFiles(actualFiles);
+        }}
+      />
       <button
         type="submit"
         style={{
