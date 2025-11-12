@@ -1,17 +1,24 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Post from "./Post";
-import type { PostProps, CommentType } from "../../types/posts"; // shared types
+import type { PostProps, CommentType } from "../../types/posts";
 import CreatePost from "./CreatePost";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
 const NewsFeed: React.FC = () => {
-  const [posts, setPosts] = useState<Omit<PostProps, "refreshFeed">[]>([]); // use PostProps without refreshFeed
+  const [posts, setPosts] = useState<Omit<PostProps, "refreshFeed">[]>([]);
 
   const fetchFeed = async () => {
     try {
-      const res = await axios.get(`${API_URL}/api/feed?userId=1`);
+      // Get current user from localStorage
+      const storedUser = localStorage.getItem("chatly_user");
+      if (!storedUser) return;
+
+      const parsedUser = JSON.parse(storedUser);
+      const userId = parsedUser.id;
+
+      const res = await axios.get(`${API_URL}/api/feed?userId=${userId}`);
 
       const postsWithUserName: Omit<PostProps, "refreshFeed">[] = res.data.map((p: any) => ({
         id: p.id,
