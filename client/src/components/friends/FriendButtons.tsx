@@ -1,31 +1,30 @@
 import React, { useState, useEffect } from "react";
 import "../../css/FriendButton.css";
 import { useFriends } from "../../context/FriendsContext";
+import { useAuth } from "../../context/AuthContext";
+
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface FriendButtonsProps {
-  currentUserId: number;
   targetUserId: number;
   onRequestSent?: () => void;
 }
 
 const FriendButtons: React.FC<FriendButtonsProps> = ({
-  currentUserId,
   targetUserId,
   onRequestSent,
 }) => {
+  const { user } = useAuth(); // ✅ get logged-in user from context
   const [status, setStatus] = useState<"none" | "pending" | "friends">("none");
   const [loading, setLoading] = useState(false);
-
-  const { refreshFriends } = useFriends(); // ✅ get function
+  const { refreshFriends } = useFriends();
 
   useEffect(() => {
     const checkStatus = async () => {
-      if (!currentUserId || !targetUserId) return;
+      if (!user?.id || !targetUserId) return;
+
       try {
-        const res = await fetch(
-          `${API_URL}/api/friends/status/${currentUserId}/${targetUserId}`
-        );
+        const res = await fetch(`${API_URL}/api/friends/status/${user.id}/${targetUserId}`);
         if (res.ok) {
           const data = await res.json();
           if (data.status === "accepted") setStatus("friends");
@@ -36,18 +35,19 @@ const FriendButtons: React.FC<FriendButtonsProps> = ({
         console.error("⚠️ Failed to check friend status:", err);
       }
     };
+
     checkStatus();
-  }, [currentUserId, targetUserId]);
+  }, [user?.id, targetUserId]);
 
   const sendRequest = async () => {
+    if (!user?.id) return;
+    setLoading(true);
     try {
-      setLoading(true);
-
       const res = await fetch(`${API_URL}/api/friends/add`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          user_id: currentUserId,
+          user_id: user.id,
           friend_id: targetUserId,
         }),
       });
@@ -56,7 +56,7 @@ const FriendButtons: React.FC<FriendButtonsProps> = ({
       if (!res.ok) throw new Error(data?.error || "Failed to send friend request");
 
       setStatus("pending");
-      refreshFriends(); // ✅ update global friends list
+      refreshFriends();
       onRequestSent?.();
     } catch (err) {
       console.error("❌ Friend request error:", err);
@@ -66,19 +66,18 @@ const FriendButtons: React.FC<FriendButtonsProps> = ({
   };
 
   const removeFriend = async () => {
+    if (!user?.id) return;
+    setLoading(true);
     try {
-      setLoading(true);
-
-      const res = await fetch(
-        `${API_URL}/api/friends/${currentUserId}/${targetUserId}`,
-        { method: "DELETE" }
-      );
+      const res = await fetch(`${API_URL}/api/friends/${user.id}/${targetUserId}`, {
+        method: "DELETE",
+      });
 
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data?.error || "Failed to remove friend");
 
       setStatus("none");
-      refreshFriends(); // ✅ instantly sync UI
+      refreshFriends();
       onRequestSent?.();
     } catch (err) {
       console.error("❌ Remove friend error:", err);
@@ -94,13 +93,11 @@ const FriendButtons: React.FC<FriendButtonsProps> = ({
           Add Friend
         </button>
       )}
-
       {status === "pending" && (
         <button className="btn-pending" disabled>
           Friend Request Sent
         </button>
       )}
-
       {status === "friends" && (
         <button className="btn-remove" disabled={loading} onClick={removeFriend}>
           UnFriend
