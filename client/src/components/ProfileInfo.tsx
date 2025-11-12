@@ -5,7 +5,7 @@ import "../css/ProfileInfo.css";
 export interface User {
   id: number;
   name: string;
-  birthdate: string;
+  birthdate: string; // ISO string from backend
   profile_image: string;
   cover_photo?: string;
   location: string;
@@ -22,12 +22,15 @@ interface Props {
   onSave?: (updatedUser: User) => void;
 }
 
+// Helper to format ISO date for <input type="date" />
+const formatDateForInput = (isoDate: string) => isoDate.split("T")[0];
+
 const ProfileInfo: React.FC<Props> = ({ user, isEditing = false, onSave }) => {
-  const [editData, setEditData] = useState<User>({ ...user });
+  const [editData, setEditData] = useState<User>({ ...user, birthdate: formatDateForInput(user.birthdate) });
 
   // Sync editData whenever user changes
   useEffect(() => {
-    setEditData({ ...user });
+    setEditData({ ...user, birthdate: formatDateForInput(user.birthdate) });
   }, [user]);
 
   const handleChange = (
@@ -39,11 +42,10 @@ const ProfileInfo: React.FC<Props> = ({ user, isEditing = false, onSave }) => {
   const handleSave = () => {
     if (!onSave) return;
 
-    // Ensure no field is undefined; fallback to original user value
     const payload: User = {
       ...editData,
       name: editData.name || user.name,
-      birthdate: editData.birthdate || user.birthdate,
+      birthdate: editData.birthdate || formatDateForInput(user.birthdate),
       location: editData.location || user.location,
       hobbies: editData.hobbies || user.hobbies,
       talents: editData.talents || user.talents,
@@ -65,106 +67,55 @@ const ProfileInfo: React.FC<Props> = ({ user, isEditing = false, onSave }) => {
 
           <div className="form-group">
             <label>Name:</label>
-            <input
-              type="text"
-              name="name"
-              value={editData.name}
-              onChange={handleChange}
-              placeholder="Name"
-            />
+            <input type="text" name="name" value={editData.name} onChange={handleChange} placeholder="Name" />
           </div>
 
           <div className="form-group">
             <label>Birthdate:</label>
-            <input
-              type="date"
-              name="birthdate"
-              value={editData.birthdate}
-              onChange={handleChange}
-            />
+            <input type="date" name="birthdate" value={editData.birthdate} onChange={handleChange} />
           </div>
 
           <div className="form-group">
             <label>Location:</label>
-            <input
-              type="text"
-              name="location"
-              value={editData.location}
-              onChange={handleChange}
-              placeholder="Location"
-            />
+            <input type="text" name="location" value={editData.location} onChange={handleChange} placeholder="Location" />
           </div>
 
           <div className="form-group">
             <label>Hobbies:</label>
-            <textarea
-              name="hobbies"
-              value={editData.hobbies}
-              onChange={handleChange}
-              placeholder="Hobbies"
-            />
+            <textarea name="hobbies" value={editData.hobbies} onChange={handleChange} placeholder="Hobbies" />
           </div>
 
           <div className="form-group">
             <label>Talents:</label>
-            <textarea
-              name="talents"
-              value={editData.talents}
-              onChange={handleChange}
-              placeholder="Talents"
-            />
+            <textarea name="talents" value={editData.talents} onChange={handleChange} placeholder="Talents" />
           </div>
 
           <div className="form-group">
             <label>Facebook URL:</label>
-            <input
-              type="url"
-              name="facebook_url"
-              value={editData.facebook_url || ""}
-              onChange={handleChange}
-              placeholder="Facebook URL"
-            />
+            <input type="url" name="facebook_url" value={editData.facebook_url || ""} onChange={handleChange} placeholder="Facebook URL" />
           </div>
 
           <div className="form-group">
             <label>Instagram URL:</label>
-            <input
-              type="url"
-              name="instagram_url"
-              value={editData.instagram_url || ""}
-              onChange={handleChange}
-              placeholder="Instagram URL"
-            />
+            <input type="url" name="instagram_url" value={editData.instagram_url || ""} onChange={handleChange} placeholder="Instagram URL" />
           </div>
 
           <div className="form-group">
             <label>TikTok URL:</label>
-            <input
-              type="url"
-              name="tiktok_url"
-              value={editData.tiktok_url || ""}
-              onChange={handleChange}
-              placeholder="TikTok URL"
-            />
+            <input type="url" name="tiktok_url" value={editData.tiktok_url || ""} onChange={handleChange} placeholder="TikTok URL" />
           </div>
 
           <div className="button-group">
-            <button className="save-btn" onClick={handleSave}>
-              Save
-            </button>
+            <button className="save-btn" onClick={handleSave}>Save</button>
           </div>
         </>
       ) : (
         <>
           <h3>About</h3>
-          <p><strong>Birthdate:</strong> {user.birthdate}</p>
+          <p><strong>Birthdate:</strong> {formatDateForInput(user.birthdate)}</p>
           <p><strong>Hobbies:</strong> {user.hobbies}</p>
           <p><strong>Talents:</strong> {user.talents}</p>
-          <SocialLinks
-            facebook={user.facebook_url}
-            tiktok={user.tiktok_url}
-            instagram={user.instagram_url}
-          />
+          <SocialLinks facebook={user.facebook_url} tiktok={user.tiktok_url} instagram={user.instagram_url} />
         </>
       )}
     </div>
