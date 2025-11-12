@@ -1,7 +1,8 @@
 import React, { createContext, useState, useEffect } from "react";
 
 // Define the Theme type (DO NOT re-export it below)
-export type ThemeType = "light" | "dark" | "red" | "blue" | "colorblind";
+export type ThemeType = "light" | "dark" | "red" | "blue" | "colorblind" | "purple";
+
 
 interface ThemeContextProps {
   theme: ThemeType;

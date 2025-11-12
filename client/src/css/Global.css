@@ -153,3 +153,43 @@ body[data-theme="colorblind"] .profile-card {
     font-size: 14px;
   }
 }
+/* ========================
+   THEME: PURPLE MODE
+   ======================== */
+body[data-theme="purple"] {
+  background: linear-gradient(180deg, #4b0082, #7d3c98);
+  color: #f3e8ff;
+}
+
+body[data-theme="purple"] nav {
+  background: rgba(155, 89, 182, 0.8);
+  color: #f3e8ff;
+}
+
+body[data-theme="purple"] .profile-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(155, 89, 182, 0.3);
+  box-shadow: 0 4px 20px rgba(155, 89, 182, 0.2);
+}
+
+/* Optional: Chat window / messages */
+body[data-theme="purple"] .chat-window,
+body[data-theme="purple"] .chat-modal {
+  background-color: rgba(75, 0, 130, 0.9);
+  color: #f3e8ff;
+}
+
+body[data-theme="purple"] .chat-message.sent {
+  background-color: #9b59b6;
+  color: #f3e8ff;
+}
+
+body[data-theme="purple"] .chat-message.received {
+  background-color: #7d3c98;
+  color: #f3e8ff;
+}
+
+body[data-theme="purple"] .chat-input-area button {
+  background-color: #9b59b6;
+  color: #f3e8ff;
+}
