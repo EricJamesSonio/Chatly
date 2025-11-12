@@ -2,7 +2,8 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
-
+import multer from "multer";
+import path from "path";
 // ✅ Import routes
 import friendlistRoutes from "./backend/routes/FriendListRoutes.js";
 import accountRoutes from "./backend/routes/AccountRoutes.js";
@@ -74,6 +75,17 @@ io.on("connection", (socket) => {
   });
 });
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/"); // folder where files are saved
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "_" + file.originalname);
+  },
+});
+
+const upload = multer({ storage });
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.set("io", io);
 
 // ✅ Routes

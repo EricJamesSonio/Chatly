@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
-import type { PostProps, CommentType } from "../../types/posts"; // ✅ shared types
+import type { PostProps, CommentType } from "../../types/posts";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -18,7 +18,6 @@ const Post: React.FC<PostProps> = ({
 }) => {
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<CommentType[]>(initialComments);
-
   const { user } = useAuth();
 
   const handleAddComment = async () => {
@@ -84,6 +83,7 @@ const Post: React.FC<PostProps> = ({
 
       <p style={{ marginBottom: "8px" }}>{content}</p>
 
+      {/* Media Display */}
       {media && media.length > 0 && (
         <div
           style={{
@@ -122,6 +122,7 @@ const Post: React.FC<PostProps> = ({
         </div>
       )}
 
+      {/* Likes */}
       <div style={{ marginTop: "4px" }}>
         <button
           onClick={handleLike}
@@ -138,32 +139,35 @@ const Post: React.FC<PostProps> = ({
         </button>
       </div>
 
+      {/* Comments */}
       <div style={{ marginTop: "12px" }}>
         <strong>Comments:</strong>
         {comments.length === 0 && (
           <p style={{ color: "#777", marginTop: "4px" }}>No comments yet</p>
         )}
 
-        {comments.map((c) => (
-          <div
-            key={c.id}
-            style={{
-              background: "#f9f9f9",
-              padding: "6px 10px",
-              borderRadius: "6px",
-              marginTop: "6px",
-            }}
-          >
-            <div style={{ fontSize: "0.9em" }}>
-              <strong>{c.user_name}</strong>{" "}
-              <span style={{ color: "#777", fontSize: "0.8em" }}>
-                {formatDate(c.created_at)}
-              </span>
-            </div>
-            <div style={{ marginTop: "2px" }}>{c.content}</div>
+      {comments.map((c) => (
+        <div
+          key={c.id}
+          style={{
+            background: "#f9f9f9",
+            padding: "6px 10px",
+            borderRadius: "6px",
+            marginTop: "6px",
+          }}
+        >
+          <div style={{ fontSize: "0.9em" }}>
+            <strong>{c.user_name}</strong>{" "}
+            <span style={{ color: "#777", fontSize: "0.8em" }}>
+              {formatDate(c.created_at)}
+            </span>
           </div>
-        ))}
+          <div style={{ marginTop: "2px" }}>{c.content}</div>
+        </div>
+      ))}
 
+
+        {/* Add Comment */}
         <div style={{ marginTop: "10px" }}>
           <input
             type="text"
