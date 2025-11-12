@@ -6,10 +6,11 @@ export default class FriendlistModel {
   // Create a new friend request
   async create(user_id, friend_id) {
     try {
-      const [result] = await this.db.execute(
-        'INSERT INTO friendlist (user_id, friend_id, status) VALUES (?, ?, "pending")',
-        [user_id, friend_id]
-      );
+    const [result] = await this.db.execute(
+      "INSERT INTO friendlist (user_id, friend_id, status) VALUES (?, ?, ?)",
+      [user_id, friend_id, 'pending']
+    );
+
       return result.insertId;
     } catch (error) {
       console.error('Error in create friend request:', error);
