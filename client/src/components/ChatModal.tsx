@@ -37,10 +37,13 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
       await refreshMessages(user.id);
       if (!mounted) return;
 
-      const chatBody = chatBodyRef.current;
-      if (chatBody) {
-        chatBody.scrollTop = chatBody.scrollHeight;
-      }
+      // Use setTimeout to ensure DOM has updated with new messages
+      setTimeout(() => {
+        const chatBody = chatBodyRef.current;
+        if (chatBody) {
+          chatBody.scrollTop = chatBody.scrollHeight;
+        }
+      }, 0);
     })();
 
     return () => {
