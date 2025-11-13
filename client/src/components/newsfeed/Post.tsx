@@ -67,30 +67,33 @@ const Post: React.FC<PostProps> = ({
   return (
     <div
       style={{
-        border: "1px solid #ddd",
-        padding: "12px",
-        marginBottom: "16px",
-        borderRadius: "8px",
+        borderRadius: "12px",
         background: "#fff",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+        padding: "16px",
+        marginBottom: "20px",
+        fontFamily: "'Inter', sans-serif",
       }}
     >
-      <div style={{ marginBottom: "8px" }}>
-        <strong>{userName}</strong>{" "}
-        <span style={{ color: "#777", fontSize: "0.9em" }}>
-          {formatDate(createdAt)}
-        </span>
+      {/* Post Header */}
+      <div style={{ marginBottom: "10px", display: "flex", justifyContent: "space-between" }}>
+        <strong style={{ fontSize: "1.05em", color: "#333" }}>{userName}</strong>
+        <span style={{ color: "#999", fontSize: "0.85em" }}>{formatDate(createdAt)}</span>
       </div>
 
-      <p style={{ marginBottom: "8px" }}>{content}</p>
+      {/* Content */}
+      <p style={{ marginBottom: "12px", lineHeight: "1.5em", fontSize: "0.95em", color: "#444" }}>
+        {content}
+      </p>
 
-      {/* Media Display */}
+      {/* Media */}
       {media && media.length > 0 && (
         <div
           style={{
             display: "flex",
-            gap: "8px",
             flexWrap: "wrap",
-            marginBottom: "8px",
+            gap: "10px",
+            marginBottom: "12px",
           }}
         >
           {media.map((m, idx) =>
@@ -100,10 +103,11 @@ const Post: React.FC<PostProps> = ({
                 src={m.url}
                 alt="media"
                 style={{
-                  width: "120px",
-                  height: "120px",
-                  borderRadius: "6px",
+                  width: "130px",
+                  height: "130px",
                   objectFit: "cover",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
                 }}
               />
             ) : (
@@ -112,9 +116,10 @@ const Post: React.FC<PostProps> = ({
                 src={m.url}
                 controls
                 style={{
-                  width: "200px",
-                  height: "120px",
-                  borderRadius: "6px",
+                  width: "220px",
+                  height: "130px",
+                  borderRadius: "8px",
+                  boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
                 }}
               />
             )
@@ -122,64 +127,66 @@ const Post: React.FC<PostProps> = ({
         </div>
       )}
 
-      {/* Likes */}
-      <div style={{ marginTop: "4px" }}>
+      {/* Like Button */}
+      <div style={{ marginBottom: "12px" }}>
         <button
           onClick={handleLike}
           style={{
             background: "#007bff",
-            color: "white",
+            color: "#fff",
             border: "none",
-            padding: "6px 12px",
-            borderRadius: "4px",
+            padding: "8px 16px",
+            borderRadius: "6px",
             cursor: "pointer",
+            fontWeight: 500,
+            transition: "background 0.2s",
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#0056b3")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "#007bff")}
         >
           👍 Like ({likes.length})
         </button>
       </div>
 
       {/* Comments */}
-      <div style={{ marginTop: "12px" }}>
-        <strong>Comments:</strong>
+      <div>
+        <strong style={{ fontSize: "0.95em" }}>Comments</strong>
         {comments.length === 0 && (
-          <p style={{ color: "#777", marginTop: "4px" }}>No comments yet</p>
+          <p style={{ color: "#999", fontSize: "0.85em", marginTop: "4px" }}>No comments yet</p>
         )}
 
-      {comments.map((c) => (
-        <div
-          key={c.id}
-          style={{
-            background: "#f9f9f9",
-            padding: "6px 10px",
-            borderRadius: "6px",
-            marginTop: "6px",
-          }}
-        >
-          <div style={{ fontSize: "0.9em" }}>
-            <strong>{c.user_name}</strong>{" "}
-            <span style={{ color: "#777", fontSize: "0.8em" }}>
-              {formatDate(c.created_at)}
-            </span>
+        {comments.map((c) => (
+          <div
+            key={c.id}
+            style={{
+              background: "#f4f4f4",
+              padding: "8px 12px",
+              borderRadius: "8px",
+              marginTop: "8px",
+            }}
+          >
+            <div style={{ fontSize: "0.85em", color: "#555" }}>
+              <strong>{c.user_name}</strong>{" "}
+              <span style={{ color: "#999", fontSize: "0.75em" }}>{formatDate(c.created_at)}</span>
+            </div>
+            <div style={{ marginTop: "4px", fontSize: "0.9em", color: "#333" }}>{c.content}</div>
           </div>
-          <div style={{ marginTop: "2px" }}>{c.content}</div>
-        </div>
-      ))}
-
+        ))}
 
         {/* Add Comment */}
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "12px", display: "flex", gap: "8px" }}>
           <input
             type="text"
             value={newComment}
             placeholder="Write a comment..."
             onChange={(e) => setNewComment(e.target.value)}
             style={{
-              width: "70%",
-              marginRight: "8px",
-              padding: "6px",
-              borderRadius: "4px",
+              flex: 1,
+              padding: "8px 10px",
+              borderRadius: "6px",
               border: "1px solid #ccc",
+              fontSize: "0.9em",
+              outline: "none",
             }}
           />
           <button
@@ -187,13 +194,17 @@ const Post: React.FC<PostProps> = ({
             disabled={!user}
             style={{
               background: "#28a745",
-              color: "white",
+              color: "#fff",
               border: "none",
-              padding: "6px 12px",
-              borderRadius: "4px",
+              padding: "8px 16px",
+              borderRadius: "6px",
               cursor: user ? "pointer" : "not-allowed",
+              fontWeight: 500,
               opacity: user ? 1 : 0.6,
+              transition: "background 0.2s",
             }}
+            onMouseEnter={(e) => user && (e.currentTarget.style.background = "#1e7e34")}
+            onMouseLeave={(e) => user && (e.currentTarget.style.background = "#28a745")}
           >
             Add
           </button>
