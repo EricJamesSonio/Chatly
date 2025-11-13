@@ -1,23 +1,15 @@
 import express from "express";
 import * as PostController from "../controllers/PostController.js";
 import { db } from "../../database/db.js";
-import multer from "multer";
-import path from "path";
+import { upload } from "../config/cloudinary.js"; // ✅ use Cloudinary upload
 
 const router = express.Router();
 
-// ✅ Multer setup
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + "_" + file.originalname),
-});
-const upload = multer({ storage });
-
-// ✅ Routes
-router.post("/api/posts", upload.array("media"), PostController.createPost(db)); // accept files
+// ✅ Routes using Cloudinary upload middleware
+router.post("/api/posts", upload.array("media", 5), PostController.createPost(db)); // accept up to 5 files
 router.get("/api/posts", PostController.getPosts(db));
 router.get("/api/posts/:postId", PostController.getPostById(db));
-router.put("/api/posts/:postId", upload.array("media"), PostController.updatePost(db));
+router.put("/api/posts/:postId", upload.array("media", 5), PostController.updatePost(db));
 router.delete("/api/posts/:postId", PostController.deletePost(db));
 router.post("/api/posts/:postId/like", PostController.likePost(db));
 router.post("/api/posts/:postId/unlike", PostController.unlikePost(db));

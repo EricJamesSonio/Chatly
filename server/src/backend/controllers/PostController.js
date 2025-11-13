@@ -16,29 +16,22 @@ export const createPost = (db) => async (req, res) => {
 
     const files = req.files || [];
 
-const isProduction = process.env.NODE_ENV === "production";
-const baseUrl = isProduction
-  ? "https://chatly-0b3p.onrender.com"
-  : `${req.protocol}://${req.get("host")}`;
+    // ✅ Cloudinary returns file.path as the hosted URL
+    const media = files.map((file) => ({
+      url: file.path, // Cloudinary URL
+      type: file.mimetype.startsWith("image") ? "image" : "video",
+    }));
 
-const media = files.map((file) => ({
-  url: `${baseUrl}/uploads/${file.filename}`,
-  type: file.mimetype.startsWith("image") ? "image" : "video",
-}));
-
-
+    // ✅ Insert post in DB
     const [result] = await db.execute(
       "INSERT INTO posts (user_id, content, media) VALUES (?, ?, ?)",
       [user_id, content, JSON.stringify(media)]
     );
 
-    const [newPost] = await db.execute(
-      "SELECT * FROM posts WHERE id = ?",
-      [result.insertId]
-    );
+    const [newPost] = await db.execute("SELECT * FROM posts WHERE id = ?", [result.insertId]);
 
     res.status(201).json({
-      message: "Post created",
+      message: "Post created successfully",
       post: newPost[0],
     });
   } catch (err) {
@@ -46,6 +39,7 @@ const media = files.map((file) => ({
     res.status(500).json({ error: err.message });
   }
 };
+
 
 // Get posts with JSON parsing
 export const getPosts = (db) => async (req, res) => {
