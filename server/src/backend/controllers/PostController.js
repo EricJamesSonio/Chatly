@@ -16,10 +16,16 @@ export const createPost = (db) => async (req, res) => {
 
     const files = req.files || [];
 
-    const media = files.map((file) => ({
-      url: `${req.protocol}://${req.get("host")}/uploads/${file.filename}`,
-      type: file.mimetype.startsWith("image") ? "image" : "video", // safe string
-    }));
+const isProduction = process.env.NODE_ENV === "production";
+const baseUrl = isProduction
+  ? "https://chatly-0b3p.onrender.com"
+  : `${req.protocol}://${req.get("host")}`;
+
+const media = files.map((file) => ({
+  url: `${baseUrl}/uploads/${file.filename}`,
+  type: file.mimetype.startsWith("image") ? "image" : "video",
+}));
+
 
     const [result] = await db.execute(
       "INSERT INTO posts (user_id, content, media) VALUES (?, ?, ?)",
