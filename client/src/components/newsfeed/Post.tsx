@@ -16,9 +16,14 @@ const Post: React.FC<PostProps> = ({
   createdAt,
   refreshFeed,
 }) => {
+  const { user } = useAuth();
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<CommentType[]>(initialComments);
-  const { user } = useAuth();
+
+  // Ensure likes are numbers
+  const [likesState, setLikesState] = useState<number[]>(
+    likes.map((l) => Number(l))
+  );
 
   const handleAddComment = async () => {
     if (!newComment.trim() || !user) return;
@@ -43,14 +48,24 @@ const Post: React.FC<PostProps> = ({
     }
   };
 
-  const handleLike = async () => {
+  const handleLikeToggle = async () => {
     if (!user) return;
 
     try {
-      await axios.post(`${API_URL}/api/posts/${id}/like`, { userId: user.id });
+      const userIdNum = Number(user.id); // ensure number type
+      const hasLiked = likesState.includes(userIdNum);
+
+      if (hasLiked) {
+        await axios.post(`${API_URL}/api/posts/${id}/unlike`, { userId: userIdNum });
+        setLikesState((prev) => prev.filter((uid) => uid !== userIdNum));
+      } else {
+        await axios.post(`${API_URL}/api/posts/${id}/like`, { userId: userIdNum });
+        setLikesState((prev) => [...prev, userIdNum]);
+      }
+
       refreshFeed?.();
     } catch (err) {
-      console.error("❌ likePost error:", err);
+      console.error("❌ likeToggle error:", err);
     }
   };
 
@@ -88,14 +103,7 @@ const Post: React.FC<PostProps> = ({
 
       {/* Media */}
       {media && media.length > 0 && (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "10px",
-            marginBottom: "12px",
-          }}
-        >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "12px" }}>
           {media.map((m, idx) =>
             m.type === "image" ? (
               <img
@@ -130,9 +138,9 @@ const Post: React.FC<PostProps> = ({
       {/* Like Button */}
       <div style={{ marginBottom: "12px" }}>
         <button
-          onClick={handleLike}
+          onClick={handleLikeToggle}
           style={{
-            background: "#007bff",
+            background: likesState.includes(Number(user?.id ?? 0)) ? "#0056b3" : "#007bff",
             color: "#fff",
             border: "none",
             padding: "8px 16px",
@@ -141,10 +149,8 @@ const Post: React.FC<PostProps> = ({
             fontWeight: 500,
             transition: "background 0.2s",
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "#0056b3")}
-          onMouseLeave={(e) => (e.currentTarget.style.background = "#007bff")}
         >
-          👍 Like ({likes.length})
+          👍 {likesState.includes(Number(user?.id ?? 0)) ? "Unlike" : "Like"} ({likesState.length})
         </button>
       </div>
 
@@ -203,8 +209,6 @@ const Post: React.FC<PostProps> = ({
               opacity: user ? 1 : 0.6,
               transition: "background 0.2s",
             }}
-            onMouseEnter={(e) => user && (e.currentTarget.style.background = "#1e7e34")}
-            onMouseLeave={(e) => user && (e.currentTarget.style.background = "#28a745")}
           >
             Add
           </button>

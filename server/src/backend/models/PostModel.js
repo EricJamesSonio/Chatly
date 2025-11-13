@@ -46,12 +46,19 @@ export default class Post {
   }
 
   // Unlike post
-  unlikePost(postId, userId) {
+  likePost(postId, userId) {
     return this.db.execute(
-      "UPDATE posts SET likes = JSON_REMOVE(likes, JSON_UNQUOTE(JSON_SEARCH(likes, 'one', ?))) WHERE id = ?",
-      [userId, postId]
+      `UPDATE posts
+      SET likes = CASE
+        WHEN likes IS NULL THEN JSON_ARRAY(?)
+        WHEN JSON_CONTAINS(likes, JSON_QUOTE(?), '$') THEN likes
+        ELSE JSON_ARRAY_APPEND(likes, '$', ?)
+      END
+      WHERE id = ?`,
+      [userId, userId, userId, postId]
     );
   }
+
 
   // Add comment
   addComment({ post_id, user_id, content }) {
