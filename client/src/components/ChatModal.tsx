@@ -22,8 +22,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
   const [newMessageAlert, setNewMessageAlert] = useState(false);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
-
-  // Use number | null for browser timeout IDs
   const hideAlertTimeout = useRef<number | null>(null);
 
   // Initialize socket ref
@@ -31,24 +29,31 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
     socketRef.current = socket;
   }, [socket]);
 
-  // Scroll to bottom when opening chat
+  // Load messages and scroll once to latest when opening
   useEffect(() => {
     if (!isOpen) return;
-    const chatBody = chatBodyRef.current;
-    if (!chatBody) return;
+    let mounted = true;
 
-    refreshMessages(user.id).then(() => {
-      requestAnimationFrame(() => {
+    (async () => {
+      await refreshMessages(user.id);
+      if (!mounted) return;
+
+      const chatBody = chatBodyRef.current;
+      if (chatBody) {
         chatBody.scrollTop = chatBody.scrollHeight;
-      });
-    });
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
   }, [isOpen, user.id, refreshMessages]);
 
-  // Handle new incoming messages
+  // Handle new incoming messages (no auto scroll)
   useEffect(() => {
     if (!socketRef.current) return;
 
-    const handleNewMessage = (msg: any) => {
+    const handleNewMessage = async (msg: any) => {
       if (msg.sender_id === user.id || msg.receiver_id === user.id) {
         const chatBody = chatBodyRef.current;
         if (!chatBody) return;
@@ -56,16 +61,12 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
         const isAtBottom =
           chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 50;
 
-        refreshMessages(user.id).then(() => {
-          if (isAtBottom) {
-            requestAnimationFrame(() => {
-              chatBody.scrollTop = chatBody.scrollHeight;
-            });
-            setNewMessageAlert(false);
-          } else {
-            setNewMessageAlert(true);
-          }
-        });
+        await refreshMessages(user.id);
+
+        // Only show alert if user is not near bottom
+        if (!isAtBottom) {
+          setNewMessageAlert(true);
+        }
       }
     };
 
@@ -75,7 +76,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
     };
   }, [user.id, refreshMessages]);
 
-  // Handle scroll (detect near bottom + hide alert smoothly)
+  // Hide alert when user scrolls near bottom
   useEffect(() => {
     const chatBody = chatBodyRef.current;
     if (!chatBody) return;
@@ -84,7 +85,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
       const isNearBottom =
         chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 80;
 
-      // Auto-hide the new message alert if scrolled near bottom
       if (isNearBottom && newMessageAlert) {
         if (hideAlertTimeout.current !== null) {
           window.clearTimeout(hideAlertTimeout.current);
@@ -110,13 +110,6 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
     if (!input.trim()) return;
     await sendMessage(user.id, input);
     setInput("");
-
-    const chatBody = chatBodyRef.current;
-    if (chatBody) {
-      requestAnimationFrame(() => {
-        chatBody.scrollTop = chatBody.scrollHeight;
-      });
-    }
   };
 
   const handleScrollToBottom = () => {
