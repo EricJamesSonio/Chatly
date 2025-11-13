@@ -1,12 +1,26 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "./AuthContext";
+import { socket } from "./socket";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
-interface Media { url: string; type: string }
-interface CommentType { id: number; userId: number; content: string }
+// Media type
+export interface Media { 
+  url: string; 
+  type: string; 
+}
 
+// Comment type matches PostProps
+export interface CommentType {
+  id: number;
+  user_id: number;
+  user_name: string;
+  content: string;
+  created_at?: string;
+}
+
+// Post type matches PostProps
 export interface PostType {
   id: number;
   userId: number;
@@ -33,17 +47,36 @@ interface PostContextType {
 const PostContext = createContext<PostContextType | undefined>(undefined);
 
 export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { user, socket } = useAuth();
+  const { user } = useAuth();
   const [posts, setPosts] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch posts from API
   const fetchPosts = async () => {
     if (!user?.id) return;
     setLoading(true);
     try {
       const res = await axios.get(`${API_URL}/api/feed?userId=${user.id}`);
-      setPosts(res.data);
+      // Normalize API data to match types
+      const normalizedPosts: PostType[] = res.data.map((p: any) => ({
+        id: p.id,
+        userId: p.user_id ?? p.userId,
+        userName: p.user_name ?? p.userName,
+        content: p.content,
+        media: p.media || [],
+        likes: p.likes || [],
+        comments: (p.comments || []).map((c: any) => ({
+          id: c.id,
+          user_id: c.user_id ?? c.userId,
+          user_name: c.user_name ?? c.userName,
+          content: c.content,
+          created_at: c.created_at,
+        })),
+        createdAt: p.created_at,
+        updatedAt: p.updated_at,
+      }));
+      setPosts(normalizedPosts);
       setError(null);
     } catch (err: any) {
       console.error("❌ Failed to fetch posts", err);
@@ -56,26 +89,45 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // CRUD actions
   const createPost = async (content: string, media: Media[]) => {
     if (!user?.id) return;
-    await axios.post(`${API_URL}/api/posts`, { user_id: user.id, content, media });
+    const res = await axios.post(`${API_URL}/api/posts`, { user_id: user.id, content, media });
+    // Emit socket event for real-time update
+    socket.emit("post_created", res.data);
   };
-  const likePost = async (postId: number) => { if (!user?.id) return; await axios.post(`${API_URL}/api/posts/${postId}/like`, { userId: user.id }); };
-  const unlikePost = async (postId: number) => { if (!user?.id) return; await axios.post(`${API_URL}/api/posts/${postId}/unlike`, { userId: user.id }); };
-  const addComment = async (postId: number, content: string) => { if (!user?.id) return; await axios.post(`${API_URL}/api/posts/${postId}/comment`, { user_id: user.id, content }); };
-  const deleteComment = async (postId: number, commentId: number) => { await axios.delete(`${API_URL}/api/posts/${postId}/comment/${commentId}`); };
 
+  const likePost = async (postId: number) => {
+    if (!user?.id) return;
+    await axios.post(`${API_URL}/api/posts/${postId}/like`, { userId: user.id });
+  };
+
+  const unlikePost = async (postId: number) => {
+    if (!user?.id) return;
+    await axios.post(`${API_URL}/api/posts/${postId}/unlike`, { userId: user.id });
+  };
+
+  const addComment = async (postId: number, content: string) => {
+    if (!user?.id) return;
+    const res = await axios.post(`${API_URL}/api/posts/${postId}/comment`, { user_id: user.id, content });
+    socket.emit("comment_added", res.data);
+  };
+
+  const deleteComment = async (postId: number, commentId: number) => {
+    await axios.delete(`${API_URL}/api/posts/${postId}/comment/${commentId}`);
+    socket.emit("comment_deleted", { postId, commentId });
+  };
+
+  // Setup real-time socket listeners
   useEffect(() => {
     if (!user?.id) return;
 
     fetchPosts();
 
-    if (!socket) return;
+    socket.connect();
 
-    // Listen for real-time updates
     const handlePostUpdate = (updatedPost: PostType) => {
       setPosts((prev) => {
         const exists = prev.find((p) => p.id === updatedPost.id);
         if (exists) return prev.map((p) => (p.id === updatedPost.id ? updatedPost : p));
-        return [updatedPost, ...prev]; // new post
+        return [updatedPost, ...prev];
       });
     };
 
@@ -91,11 +143,14 @@ export const PostProvider: React.FC<{ children: React.ReactNode }> = ({ children
       socket.off("post_created", handlePostUpdate);
       socket.off("post_updated", handlePostUpdate);
       socket.off("post_deleted", handlePostDelete);
+      socket.disconnect();
     };
-  }, [user?.id, socket]);
+  }, [user?.id]);
 
   return (
-    <PostContext.Provider value={{ posts, loading, error, createPost, likePost, unlikePost, addComment, deleteComment }}>
+    <PostContext.Provider
+      value={{ posts, loading, error, createPost, likePost, unlikePost, addComment, deleteComment }}
+    >
       {children}
     </PostContext.Provider>
   );
