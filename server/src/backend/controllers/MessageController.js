@@ -10,7 +10,7 @@ export const getMessages = async (req, res) => {
     const messages = await Message.getMessagesBetween(userId1, userId2);
     res.json(messages);
   } catch (err) {
-    console.error(err);
+    console.error("❌ getMessages error:", err);
     res.status(500).json({ error: "Failed to fetch messages" });
   }
 };
@@ -23,15 +23,18 @@ export const sendMessage = async (req, res) => {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
+    // Create the message (ensure it defaults to unread)
     const newMessage = await Message.createMessage(senderId, receiverId, message);
 
-    // Emit via Socket.IO
     const io = req.app.get("io");
+
+    // ✅ Emit to both users (sender + receiver)
     io.to(`user_${receiverId}`).emit("new_message", newMessage);
+    io.to(`user_${senderId}`).emit("new_message", newMessage);
 
     res.status(201).json(newMessage);
   } catch (err) {
-    console.error(err);
+    console.error("❌ sendMessage error:", err);
     res.status(500).json({ error: "Failed to send message" });
   }
 };
@@ -43,7 +46,7 @@ export const getUnreadCounts = async (req, res) => {
     const counts = await Message.getUnreadCounts(userId);
     res.json(counts);
   } catch (err) {
-    console.error(err);
+    console.error("❌ getUnreadCounts error:", err);
     res.status(500).json({ error: "Failed to fetch unread counts" });
   }
 };
@@ -53,9 +56,17 @@ export const markAsRead = async (req, res) => {
   try {
     const { userId, senderId } = req.params;
     await Message.markMessagesAsRead(userId, senderId);
+
+    // Optional: emit event so sender knows messages were read
+    const io = req.app.get("io");
+    io.to(`user_${senderId}`).emit("messages_read", {
+      readerId: userId,
+      senderId,
+    });
+
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("❌ markAsRead error:", err);
     res.status(500).json({ error: "Failed to mark messages as read" });
   }
 };
