@@ -22,14 +22,13 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
   const [newMessageAlert, setNewMessageAlert] = useState(false);
   const chatBodyRef = useRef<HTMLDivElement>(null);
   const socketRef = useRef<Socket | null>(null);
-  const hideAlertTimeout = useRef<number | null>(null);
 
   // Initialize socket ref
   useEffect(() => {
     socketRef.current = socket;
   }, [socket]);
 
-  // Load messages and scroll once to latest when opening
+  // Load messages and scroll to bottom ONLY when opening the modal
   useEffect(() => {
     if (!isOpen) return;
     let mounted = true;
@@ -49,7 +48,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
     };
   }, [isOpen, user.id, refreshMessages]);
 
-  // Handle new incoming messages (no auto scroll)
+  // Handle new incoming messages (no auto scroll, just show alert)
   useEffect(() => {
     if (!socketRef.current) return;
 
@@ -63,7 +62,7 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
 
         await refreshMessages(user.id);
 
-        // Only show alert if user is not near bottom
+        // Show alert if user is not at the bottom
         if (!isAtBottom) {
           setNewMessageAlert(true);
         }
@@ -86,23 +85,13 @@ const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) =
         chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 80;
 
       if (isNearBottom && newMessageAlert) {
-        if (hideAlertTimeout.current !== null) {
-          window.clearTimeout(hideAlertTimeout.current);
-        }
-        hideAlertTimeout.current = window.setTimeout(() => {
-          setNewMessageAlert(false);
-          hideAlertTimeout.current = null;
-        }, 300);
+        setNewMessageAlert(false);
       }
     };
 
     chatBody.addEventListener("scroll", handleScroll);
     return () => {
       chatBody.removeEventListener("scroll", handleScroll);
-      if (hideAlertTimeout.current !== null) {
-        window.clearTimeout(hideAlertTimeout.current);
-        hideAlertTimeout.current = null;
-      }
     };
   }, [newMessageAlert]);
 
