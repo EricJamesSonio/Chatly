@@ -11,6 +11,13 @@ interface LayoutProps {
   showSidebar?: boolean;
 }
 
+// Define the user type for chat users
+interface ChatUser {
+  id: number;
+  name: string;
+  profile_image?: string;
+}
+
 const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [openChats, setOpenChats] = useState<number[]>([]);
@@ -19,18 +26,15 @@ const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
   const toggleSidebar = () => setIsSidebarExpanded(!isSidebarExpanded);
 
   const handleUserSelect = (userId: number) => {
-    setOpenChats((prev) => {
-      if (!prev.includes(userId)) return [...prev, userId];
-      return prev;
-    });
+    setOpenChats((prev) => (prev.includes(userId) ? prev : [...prev, userId]));
   };
 
   const closeChat = (userId: number) => {
     setOpenChats((prev) => prev.filter((id) => id !== userId));
   };
 
-  // Get full user objects for open chats
-  const selectedUsers = chatUsers.filter((u) => openChats.includes(u.id));
+  // Filter full user objects for open chats
+  const selectedUsers: ChatUser[] = chatUsers.filter((u) => openChats.includes(u.id));
 
   return (
     <div className="layout-wrapper">
@@ -53,19 +57,17 @@ const Layout: React.FC<LayoutProps> = ({ children, showSidebar = false }) => {
         {children}
       </main>
 
-      {/* Multiple chat modals */}
+      {/* Chat modals */}
       <div
         className="chat-modals-container"
-        style={{
-          right: isSidebarExpanded ? 330 : 70,
-        }}
+        style={{ right: isSidebarExpanded ? 330 : 70 }}
       >
-        {selectedUsers.map((user, index) => (
+        {selectedUsers.map((user: ChatUser, index: number) => (
           <ChatModal
             key={user.id}
             isOpen={true}
             onClose={() => closeChat(user.id)}
-            user={user} // ✅ pass full user object
+            user={user} // ✅ matches ChatModalProps
             style={{ bottom: 0, right: `${index * 360}px` }}
           />
         ))}

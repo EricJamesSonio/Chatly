@@ -1,193 +1,192 @@
-import React, { useEffect, useState, useRef } from "react";
-import "../css/ChatModal.css";
+import React, { useEffect, useState } from "react";
+import "../css/ChatSidebar.css";
 import { useMessages } from "../context/MessagesContext";
-import type { Socket } from "socket.io-client";
-import UserAvatar from "./UserAvatar";
+const API_URL = import.meta.env.VITE_API_URL;
 
-interface ChatModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  user: {
-    id: number;
-    name: string;
-    profile_image?: string;
-  };
-  style?: React.CSSProperties;
+
+interface Message {
+  id: number;
+  sender_id: number;
+  receiver_id: number;
+  message: string;
+  created_at: string;
 }
 
-const ChatModal: React.FC<ChatModalProps> = ({ isOpen, onClose, user, style }) => {
-  const { messages, sendMessage, refreshMessages, socket, activeUsers } = useMessages();
-  const [input, setInput] = useState("");
-  const [minimized, setMinimized] = useState(false);
-  const [newMessageAlert, setNewMessageAlert] = useState(false);
-  const chatBodyRef = useRef<HTMLDivElement>(null);
-  const socketRef = useRef<Socket | null>(null);
-  const hideAlertTimeout = useRef<number | null>(null);
+interface ChatSidebarProps {
+  isExpanded: boolean;
+  onToggle: () => void;
+  onUserSelect: (userId: number) => void;
+  activeUserId?: number | null;
+}
 
-  // Initialize socket ref
-  useEffect(() => {
-    socketRef.current = socket;
-  }, [socket]);
+const ChatSidebar: React.FC<ChatSidebarProps> = ({
+  isExpanded,
+  onToggle,
+  onUserSelect,
+  activeUserId,
+}) => {
+  const { chatUsers, socket, activeUsers } = useMessages();
+  const currentUser = JSON.parse(localStorage.getItem("chatly_user") || "{}");
 
-  // Load messages and scroll once to latest when opening
-  useEffect(() => {
-    if (!isOpen) return;
-    let mounted = true;
+  const [lastMessages, setLastMessages] = useState<Record<number, Message>>({});
+  const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>(() => {
+    // Initialize from localStorage if available
+    const savedCounts = localStorage.getItem('chatly_unread_counts');
+    return savedCounts ? JSON.parse(savedCounts) : {};
+  });
 
-    (async () => {
-      await refreshMessages(user.id);
-      if (!mounted) return;
-
-      const chatBody = chatBodyRef.current;
-      if (chatBody) {
-        chatBody.scrollTop = chatBody.scrollHeight;
+  // Fetch last message for a user
+  const fetchLastMessage = async (userId: number) => {
+    try {
+      const res = await fetch(
+        `${API_URL}/api/messages/${currentUser.id}/${userId}`
+      );
+      const data: Message[] = await res.json();
+      if (data.length) {
+        setLastMessages((prev) => ({
+          ...prev,
+          [userId]: data[data.length - 1],
+        }));
       }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, [isOpen, user.id, refreshMessages]);
-
-  // Handle new incoming messages (no auto scroll)
-  useEffect(() => {
-    if (!socketRef.current) return;
-
-    const handleNewMessage = async (msg: any) => {
-      if (msg.sender_id === user.id || msg.receiver_id === user.id) {
-        const chatBody = chatBodyRef.current;
-        if (!chatBody) return;
-
-        const isAtBottom =
-          chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 50;
-
-        await refreshMessages(user.id);
-
-        // Only show alert if user is not near bottom
-        if (!isAtBottom) {
-          setNewMessageAlert(true);
-        }
-      }
-    };
-
-    socketRef.current.on("new_message", handleNewMessage);
-    return () => {
-      socketRef.current?.off("new_message", handleNewMessage);
-    };
-  }, [user.id, refreshMessages]);
-
-  // Hide alert when user scrolls near bottom
-  useEffect(() => {
-    const chatBody = chatBodyRef.current;
-    if (!chatBody) return;
-
-    const handleScroll = () => {
-      const isNearBottom =
-        chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight < 80;
-
-      if (isNearBottom && newMessageAlert) {
-        if (hideAlertTimeout.current !== null) {
-          window.clearTimeout(hideAlertTimeout.current);
-        }
-        hideAlertTimeout.current = window.setTimeout(() => {
-          setNewMessageAlert(false);
-          hideAlertTimeout.current = null;
-        }, 300);
-      }
-    };
-
-    chatBody.addEventListener("scroll", handleScroll);
-    return () => {
-      chatBody.removeEventListener("scroll", handleScroll);
-      if (hideAlertTimeout.current !== null) {
-        window.clearTimeout(hideAlertTimeout.current);
-        hideAlertTimeout.current = null;
-      }
-    };
-  }, [newMessageAlert]);
-
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    await sendMessage(user.id, input);
-    setInput("");
-  };
-
-  const handleScrollToBottom = () => {
-    const chatBody = chatBodyRef.current;
-    if (chatBody) {
-      chatBody.scrollTop = chatBody.scrollHeight;
-      setNewMessageAlert(false);
+    } catch (err) {
+      console.error("❌ Failed to fetch last message", err);
     }
   };
 
-  if (!isOpen) return null;
+  // Update localStorage whenever unreadCounts changes
+  useEffect(() => {
+    localStorage.setItem('chatly_unread_counts', JSON.stringify(unreadCounts));
+  }, [unreadCounts]);
+
+  // Fetch unread counts for the current user
+  const fetchUnreadCounts = async () => {
+    if (!currentUser?.id) return;
+    try {
+      const res = await fetch(`${API_URL}/api/messages/unread/${currentUser.id}`);
+      const serverCounts: Record<number, number> = await res.json();
+      
+      // Merge with existing counts to prevent losing unread state on refresh
+      setUnreadCounts(prevCounts => {
+        const merged = { ...serverCounts };
+        // Preserve any existing unread counts that might not be on server yet
+        Object.entries(prevCounts).forEach(([userId, count]) => {
+          const uid = Number(userId);
+          if (count > 0 && (!(uid in serverCounts) || serverCounts[uid] < count)) {
+            merged[uid] = count;
+          }
+        });
+        return merged;
+      });
+    } catch (err) {
+      console.error("❌ Failed to fetch unread counts", err);
+    }
+  };
+
+  // Fetch last messages & unread counts on mount / chatUsers change
+  useEffect(() => {
+    chatUsers.forEach((user) => fetchLastMessage(user.id));
+    fetchUnreadCounts();
+  }, [chatUsers]);
+
+  // Socket.IO listener for new messages
+  useEffect(() => {
+    if (!currentUser.id || !socket) return;
+
+   socket.emit("join", `user_${currentUser.id}`);
+
+
+    const handleNewMessage = (message: Message) => {
+      const otherUserId =
+        message.sender_id === currentUser.id ? message.receiver_id : message.sender_id;
+
+      setLastMessages((prev) => ({
+        ...prev,
+        [otherUserId]: message,
+      }));
+
+      // Increment unread count if not the active chat
+      if (activeUserId !== otherUserId) {
+        setUnreadCounts((prev) => ({
+          ...prev,
+          [otherUserId]: (prev[otherUserId] || 0) + 1,
+        }));
+      }
+    };
+
+    socket.on("new_message", handleNewMessage);
+
+    return () => {
+      socket.off("new_message", handleNewMessage);
+    };
+  }, [currentUser.id, socket, activeUserId]);
+
+  const handleUserSelect = async (userId: number) => {
+    onUserSelect(userId);
+
+    // Mark messages as read on the backend
+    try {
+      await fetch(`${API_URL}/api/messages/read/${currentUser.id}/${userId}`, {
+        method: "POST",
+      });
+    } catch (err) {
+      console.error("❌ Failed to mark messages as read", err);
+    }
+
+    // Clear unread count locally
+    setUnreadCounts((prev) => {
+      const copy = { ...prev };
+      delete copy[userId];
+      return copy;
+    });
+    
+    // Also update localStorage immediately
+    const updatedCounts = { ...unreadCounts };
+    delete updatedCounts[userId];
+    localStorage.setItem('chatly_unread_counts', JSON.stringify(updatedCounts));
+  };
 
   return (
-    <div className="chat-modal-overlay" style={style}>
-      <div className={`chat-modal ${minimized ? "minimized" : ""}`}>
-        <header className="chat-modal-header">
-          <div className="chat-avatar-wrapper">
-            <UserAvatar
-              avatar={user.profile_image || "/assets/default.png"}
-              size={50}
-              alt={user.name}
-            />
-            {activeUsers.includes(user.id) && <span className="active-indicator" />}
-          </div>
-          <h3>{user.name}</h3>
-          <div>
-            <button className="minimize-btn" onClick={() => setMinimized((p) => !p)}>
-              {minimized ? "▢" : "_"}
-            </button>
-            <button className="close-btn" onClick={onClose}>
-              X
-            </button>
-          </div>
-        </header>
+    <div className={`chat-sidebar ${isExpanded ? "expanded" : "collapsed"}`}>
+      <button className="sidebar-toggle" onClick={onToggle}>
+        {isExpanded ? "◀" : "☰"}
+      </button>
 
-        {!minimized && (
-          <>
-            <div className="chat-body" ref={chatBodyRef}>
-              {(messages[user.id] || []).map((msg) => {
-                const time = new Date(msg.created_at).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                return (
-                  <div
-                    key={msg.id}
-                    className={`chat-message ${msg.sender_id === user.id ? "received" : "sent"}`}
-                  >
-                    <div className="message-text">{msg.message}</div>
-                    <div className="message-time">{time}</div>
-                  </div>
-                );
-              })}
-            </div>
+      <div className="chat-list">
+        {chatUsers.map((u) => {
+          const isOnline = activeUsers.includes(u.id);
+          const unreadCount = unreadCounts[u.id] || 0;
 
-            {newMessageAlert && (
-              <div className="new-messages-alert" onClick={handleScrollToBottom}>
-                New messages below ⬇
+          return (
+            <div
+              key={u.id}
+              className={`chat-user ${activeUserId === u.id ? "active" : ""} ${
+                unreadCount > 0 ? "unread" : ""
+              }`}
+              onClick={() => handleUserSelect(u.id)}
+            >
+              <div className="chat-avatar-container">
+                <img
+                  className="chat-avatar"
+                  src={u.profile_image || "/assets/avatar1.jpg"}
+                  alt={u.name}
+                />
+                {isOnline && <span className="active-indicator" />}
               </div>
-            )}
 
-            <footer className="chat-input-area">
-              <input
-                type="text"
-                placeholder="Type a message..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-              />
-              <button onClick={handleSend} aria-label="Send message">
-                ➤
-              </button>
-            </footer>
-          </>
-        )}
+              <div className="chat-user-info">
+                <div className="chat-name">{u.name}</div>
+                <div className="chat-last">
+                  {lastMessages[u.id]?.message || "No messages yet"}
+                </div>
+              </div>
+
+              {unreadCount > 0 && <span className="unread-badge">{unreadCount}</span>}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
-export default ChatModal;
+export default ChatSidebar;
